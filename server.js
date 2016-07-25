@@ -22,6 +22,7 @@ function onConnection(sock) {
 
 function setUpGame(sock) {
   if(waitingPlayer) {
+    
     new ZombieGame(waitingPlayer, sock, io);
     waitingPlayer = null;
     io.emit('msg', 'you are matched!');

@@ -14,8 +14,7 @@ ZombieTestDemo.prototype._initSockets = function () {
 
 ZombieTestDemo.prototype.playerPositions = function () {
   var positions = [];
-  this._players.forEach((player) => { positions.push(this.position); });
-  console.log("updating positions");
+  this._players.forEach((player) => { positions.push(player.position); });
   return positions;
 };
 
