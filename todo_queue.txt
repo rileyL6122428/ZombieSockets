@@ -1,0 +1,3 @@
+get handshake display up and runnting
+get canvas element with two blocks and props for block locations up and running
+get handshake established

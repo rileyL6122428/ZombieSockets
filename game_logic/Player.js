@@ -10,4 +10,12 @@ Player.prototype._initializePosition = function () {
   }
 };
 
+Player.prototype._initSocket = function () {
+  this.sock.on('move right', moveRight);
+};
+
+function moveRight() {
+  this.position[0] += 5;
+}
+
 module.exports = Player;

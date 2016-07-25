@@ -8,24 +8,25 @@ var app = express();
 var server = http.createServer(app);
 var io = socketio(server);
 
-var ZombieGame = require('./ZombieTestLogic/ZombieGame.js');
+var ZombieGame = require('./game_logic/ZombieGame.js');
 let waitingPlayer;
 
 io.on('connection', onConnection);
 app.use(express.static(__dirname + '/client'));
-server.listen(3000, () => console.log('Ready to work'));
+server.listen(3000, () => console.log('(の_の)'));
 
 function onConnection(sock) {
-  sock.on('move', function() {
-    console.log("moving");
-    io.emit('move', [5,0])
-  });
+  io.emit('handShake', 'Hand Shake Established');
+  setUpGame(sock);
+}
 
+function setUpGame(sock) {
   if(waitingPlayer) {
-    new ZombieGame(waitingPlayer, sock);
+    new ZombieGame(waitingPlayer, sock, io);
     waitingPlayer = null;
+    io.emit('msg', 'you are matched!');
   } else {
     waitingPlayer = sock;
-    sock.emit('msg', 'you are waiting for a second player')
+    sock.emit('msg', 'you are waiting for a second player');
   }
 }
