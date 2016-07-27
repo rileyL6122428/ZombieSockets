@@ -8,7 +8,7 @@ var renderID = setInterval(function() {
   ctx.clearRect(0, 0, 600, 500);
   positions.forEach((pos) => { ctx.fillRect(pos[0], pos[1], 100, 100); });
   inputHandler.handleInput(sock);
-}, 1000/60);
+}, 1000/30);
 
 window.addEventListener("beforeunload", (e) => { clearInterval(renderID); });
 

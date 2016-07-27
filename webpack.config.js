@@ -4,7 +4,7 @@ module.exports = {
   context: __dirname,
   entry: "./client/canvas_render_script.js",
   output: {
-    path: path.join(__dirname, 'webpack'),
+    path: path.join(__dirname,'client', 'webpack'),
     filename: "bundle.js",
     devtoolModuleFilenameTemplate: '[resourcePath]',
     devtoolFallbackModuleFilenameTemplate: '[resourcePath]?[hash]'

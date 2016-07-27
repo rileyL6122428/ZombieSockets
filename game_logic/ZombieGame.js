@@ -22,6 +22,6 @@ ZombieTestDemo.prototype.setupPositionUpdateCallback = function (io) {
   var that = this;
   setInterval(function () {
     io.emit('position update', that.playerPositions());
-  }, 1000/60);
+  }, 1000/30);
 };
 module.exports = ZombieTestDemo;
