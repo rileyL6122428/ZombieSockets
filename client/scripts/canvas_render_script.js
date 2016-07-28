@@ -13,4 +13,4 @@ var renderID = setInterval(function() {
 
 window.addEventListener("beforeunload", (e) => { clearInterval(renderID); });
 
-socketInitializer.initializeSockets(sock);
+socketInitializer.initializeSockets(sock, positions);

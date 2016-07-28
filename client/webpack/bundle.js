@@ -59,7 +59,7 @@
 	
 	window.addEventListener("beforeunload", (e) => { clearInterval(renderID); });
 	
-	socketInitializer.initializeSockets(sock);
+	socketInitializer.initializeSockets(sock, positions);
 
 
 /***/ },
@@ -67,13 +67,13 @@
 /***/ function(module, exports) {
 
 	module.exports = {
-	  initializeSockets: function (sock) {
+	  initializeSockets: function (sock, positions) {
 	    this.setupHandshakeReciever(sock);
 	    this.setupNotificationReciever(sock);
-	    this.setupPositionReciever(sock);
+	    this.setupPositionReciever(sock, positions);
 	  },
 	
-	  setupPositionReciever: function (sock) {
+	  setupPositionReciever: function (sock, positions) {
 	    sock.on('position update', updatePositions);
 	    function updatePositions(posArr) {
 	      posArr.forEach((pos, idx) => { positions[idx] = posArr[idx]; });
