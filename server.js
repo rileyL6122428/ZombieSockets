@@ -6,6 +6,7 @@ var socketio = require('socket.io');
 
 var app = express();
 var server = http.createServer(app);
+// var io = socketio(app); //NOTE SINGLE TEST LINE
 var io = socketio(server);
 
 var ZombieGame = require('./game_logic/ZombieGame.js');
@@ -13,15 +14,15 @@ let waitingPlayer;
 
 io.on('connection', onConnection);
 app.use(express.static(__dirname + '/client'));
-app.set('port', (process.env.PORT || 5000)); //NOTE TEST LINE
+app.set('port', (process.env.PORT || 5000)); //NOTE Begin TEST LINEs
 app.get('/', function(request, response) {
-  response.render('client/index.html');
+  res.sendfile(__dirname + 'client/index.html');
 });
-app.listen(app.get('port'), function() {
-  console.log('Node app is running on port', app.get('port'));
-});
+// app.listen(app.get('port'), function() {
+//   console.log('Node app is running on port', app.get('port'));
+// });
 // NOTE END TEST
-// server.listen(3000, () => console.log('(の_の)'));
+server.listen(5000, () => console.log('(の_の)'));
 
 function onConnection(sock) {
   io.emit('handShake', 'Hand Shake Established');
