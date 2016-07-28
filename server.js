@@ -13,8 +13,15 @@ let waitingPlayer;
 
 io.on('connection', onConnection);
 app.use(express.static(__dirname + '/client'));
-app.set('port', (process.env.PORT || 5000));
-server.listen(3000, () => console.log('(の_の)'));
+app.set('port', (process.env.PORT || 5000)); //NOTE TEST LINE
+app.get('/', function(request, response) {
+  response.render('client/index.html');
+});
+app.listen(app.get('port'), function() {
+  console.log('Node app is running on port', app.get('port'));
+});
+// NOTE END TEST
+// server.listen(3000, () => console.log('(の_の)'));
 
 function onConnection(sock) {
   io.emit('handShake', 'Hand Shake Established');
