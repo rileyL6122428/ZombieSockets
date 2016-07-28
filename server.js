@@ -13,6 +13,7 @@ let waitingPlayer;
 
 io.on('connection', onConnection);
 app.use(express.static(__dirname + '/client'));
+app.set('port', (process.env.PORT || 5000));
 server.listen(3000, () => console.log('(の_の)'));
 
 function onConnection(sock) {
@@ -22,7 +23,7 @@ function onConnection(sock) {
 
 function setUpGame(sock) {
   if(waitingPlayer) {
-    
+
     new ZombieGame(waitingPlayer, sock, io);
     waitingPlayer = null;
     io.emit('msg', 'you are matched!');
