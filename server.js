@@ -18,11 +18,11 @@ app.set('port', (process.env.PORT || 5000)); //NOTE Begin TEST LINEs
 app.get('/', function(request, response) {
   res.sendfile(__dirname + 'client/index.html');
 });
-// app.listen(app.get('port'), function() {
-//   console.log('Node app is running on port', app.get('port'));
-// });
+server.listen(app.get('port'), function() {
+  console.log('Node app is running on port', app.get('port'));
+});
 // NOTE END TEST
-server.listen(5000, () => console.log('(の_の)'));
+// server.listen(5000, () => console.log('(の_の)'));
 
 function onConnection(sock) {
   io.emit('handShake', 'Hand Shake Established');
