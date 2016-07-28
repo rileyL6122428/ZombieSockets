@@ -47,9 +47,10 @@
 	var canvas = document.getElementById("canvas");
 	var ctx = canvas.getContext('2d');
 	var sock = io()
-	var inputHandler = __webpack_require__(1);
+	var socketInitializer = __webpack_require__(1);
+	var inputHandler = __webpack_require__(2);
 	
-	var positions = [[0,0], [200,100]];
+	var positions = [[-100, 0], [-100, 0]];
 	var renderID = setInterval(function() {
 	  ctx.clearRect(0, 0, 600, 500);
 	  positions.forEach((pos) => { ctx.fillRect(pos[0], pos[1], 100, 100); });
@@ -58,26 +59,47 @@
 	
 	window.addEventListener("beforeunload", (e) => { clearInterval(renderID); });
 	
-	sock.on('position update', updatePositions);
-	function updatePositions(posArr) {
-	  posArr.forEach((pos, idx) => { positions[idx] = posArr[idx]; })
-	}
-	
-	sock.on('handShake', onHandshake);
-	function onHandshake(status) {
-	  var handShake = document.getElementById("hand-shake");
-	  handShake.innerHTML = status;
-	}
-	
-	sock.on('msg', onMsg);
-	function onMsg(msg) {
-	  var status = document.getElementById("server-messages");
-	  status.innerHTML = msg;
-	}
+	socketInitializer.initializeSockets(sock);
 
 
 /***/ },
 /* 1 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	  initializeSockets: function (sock) {
+	    this.setupHandshakeReciever(sock);
+	    this.setupNotificationReciever(sock);
+	    this.setupPositionReciever(sock);
+	  },
+	
+	  setupPositionReciever: function (sock) {
+	    sock.on('position update', updatePositions);
+	    function updatePositions(posArr) {
+	      posArr.forEach((pos, idx) => { positions[idx] = posArr[idx]; });
+	    }
+	  },
+	
+	  setupHandshakeReciever: function (sock) {
+	    sock.on('handShake', onHandshake);
+	    function onHandshake(status) {
+	      var handShake = document.getElementById("hand-shake");
+	      handShake.innerHTML = status;
+	    }
+	  },
+	
+	  setupNotificationReciever: function (sock) {
+	    sock.on('msg', onMsg);
+	    function onMsg(msg) {
+	      var status = document.getElementById("server-messages");
+	      status.innerHTML = msg;
+	    }
+	  }
+	}
+
+
+/***/ },
+/* 2 */
 /***/ function(module, exports) {
 
 	var _inputSetup = [
@@ -90,7 +112,6 @@
 	module.exports = {
 	  handleInput: function(sock) {
 	    _inputSetup.forEach(function(inputs) {
-	      console.log("we are reading input");
 	      if(key.isPressed(inputs[0])) {　sock.emit(inputs[1]); }
 	    });
 	  }
