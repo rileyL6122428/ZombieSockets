@@ -1,7 +1,9 @@
-Get demo running on heroku
+Heroku:https://pure-wave-76976.herokuapp.com/ | https://git.heroku.com/pure-wave-76976.git
 
-
-
-NOTE:
-https://pure-wave-76976.herokuapp.com/ |
- https://git.heroku.com/pure-wave-76976.git
+Next Steps:
+make movable space larger and bounded
+add camera to movement
+start a character out as zombie
+transfer zombie property on tag
+End game when one human remains
+add more characters to each session (maybe 8)
