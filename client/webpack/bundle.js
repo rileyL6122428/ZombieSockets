@@ -52,20 +52,20 @@
 	var sock = io()
 	var socketInitializer = __webpack_require__(1);
 	var inputHandler = __webpack_require__(2);
+	var renderer = __webpack_require__(3);
 	
-	var positions = [[-100, 0], [-100, 0]];
+	var playerPositions = [[0, 0], [0, 0]];
+	sock.on('register player number', (idx) => { renderer.setPlayerIndex(idx); });
+	
 	var renderID = setInterval(function() {
-	  ctx.clearRect(0, 0, 600, 500);
-	  // ctx.translate(-positions[0][0], -positions[0][1]);
-	  ctx.translate(-positions[0][0] + halfWidth, -positions[0][1] + halfHeight);
-	  positions.forEach((pos) => { ctx.fillRect(pos[0], pos[1], 30, 30); });
-	  ctx.translate(positions[0][0] - halfWidth, positions[0][1] - halfHeight);
-	  inputHandler.handleInput(sock);
+	  if(renderer.readyToRender()) {
+	    renderer.renderCanvasEl(ctx, sock, playerPositions, halfWidth, halfHeight);
+	    inputHandler.handleInput(sock);
+	  }
 	}, 1000/30);
 	
 	window.addEventListener("beforeunload", (e) => { clearInterval(renderID); });
-	
-	socketInitializer.initializeSockets(sock, positions);
+	socketInitializer.initializeSockets(sock, playerPositions);
 
 
 /***/ },
@@ -122,6 +122,34 @@
 	    });
 	  }
 	}
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var inputHandler = __webpack_require__(2);
+	var pIdx;
+	
+	// NOTE posits => 'positions'
+	
+	module.exports = {
+	  renderCanvasEl: function (ctx, sock, posits, halfWidth, halfHeight) {
+	    ctx.clearRect(0, 0, 800, 550);
+	
+	    ctx.translate(-posits[pIdx][0] + halfWidth, -posits[pIdx][1] + halfHeight);
+	    posits.forEach((pos) => { ctx.fillRect(pos[0], pos[1], 30, 30); });
+	    ctx.translate(posits[pIdx][0] - halfWidth, posits[pIdx][1] - halfHeight);
+	  },
+	
+	  setPlayerIndex: function(idx) {
+	    pIdx = idx;
+	  },
+	
+	  readyToRender: function () {
+	    return pIdx !== undefined;
+	  }
+	};
 
 
 /***/ }

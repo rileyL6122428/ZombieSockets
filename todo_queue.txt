@@ -2,7 +2,7 @@ Heroku:https://pure-wave-76976.herokuapp.com/ | https://git.heroku.com/pure-wave
 
 Next Steps:
 make movable space larger and bounded
-add camera to movement
+start characters out as arcs
 start a character out as zombie
 transfer zombie property on tag
 End game when one human remains

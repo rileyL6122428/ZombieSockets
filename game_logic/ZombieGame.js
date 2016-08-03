@@ -9,7 +9,11 @@ function ZombieTestDemo(sock1, sock2, io) {
 }
 
 ZombieTestDemo.prototype._initSockets = function () {
-  this._players.forEach((player) => { player._initSocket(); });
+  this._players.forEach(function(player, idx) {
+    player._initSocket();
+    player.sock.emit('register player number', idx);
+  });
+
 };
 
 ZombieTestDemo.prototype.playerPositions = function () {
