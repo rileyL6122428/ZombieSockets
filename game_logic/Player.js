@@ -2,6 +2,7 @@ function Player(sock) {
   this.sock = sock;
   this.position = [];
   this._initializePosition();
+  this.radius = 15;
 }
 
 Player.prototype._initializePosition = function () {

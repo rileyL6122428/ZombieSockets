@@ -1,7 +1,8 @@
 Heroku:https://pure-wave-76976.herokuapp.com/ | https://git.heroku.com/pure-wave-76976.git
 
 Next Steps:
-make movable space larger and bounded
+make movable space larger and bounded (
+such that the maginitude of restricting force grows as you get further away)
 start characters out as arcs
 start a character out as zombie
 transfer zombie property on tag
