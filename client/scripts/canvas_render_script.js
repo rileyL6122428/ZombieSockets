@@ -13,7 +13,7 @@ sock.on('register player number', (idx) => { renderer.setPlayerIndex(idx); });
 
 var renderID = setInterval(function() {
   if(renderer.readyToRender()) {
-    renderer.renderCanvasEl(ctx, sock, playerPositions, halfWidth, halfHeight);
+    renderer.renderCanvasEl(ctx, playerPositions, halfWidth, halfHeight);
     inputHandler.handleInput(sock);
   }
 }, 1000/30);
