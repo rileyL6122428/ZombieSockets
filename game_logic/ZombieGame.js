@@ -1,9 +1,10 @@
 'use strict'
-var Boundary = require('./boundary.js');
+var Boundary = require('./Boundary.js');
 var Player = require('./Player.js');
+var HumanPlayer = require('./Human.js');
 
 function ZombieTestDemo(sock1, sock2, io) {
-  this._players = [new Player(sock1), new Player(sock2)];
+  this._players = [new HumanPlayer(sock1), new HumanPlayer(sock2)];
   this.boundary = new Boundary(500, 500);
   this._initSockets();
   this.setupPositionUpdateCallback(io);

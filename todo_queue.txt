@@ -5,5 +5,11 @@ start a character out as a zombie
 transfer zombie property on tag
 End game when one human remains
 add more characters to each session (maybe 8)
-Organize multple games
+Organize multiple games
 flesh out extra mechanics, including scoreable mechanics
+
+
+ZOMBIE Change game plan
+if a player is chosen to be a zombie, they instantiate as a new Zombie
+if a player is chosen to be a human, they instantiate as a new Human
+When caught, the player will be reinstantiated as a zombie

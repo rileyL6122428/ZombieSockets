@@ -1,3 +1,6 @@
+// NOTE THIS IS A BASE CLASS
+// INHERITORS of this class must implement move and is a Zombie
+
 function Player(sock) {
   this.sock = sock;
   this.position = [];
@@ -21,34 +24,16 @@ var _movementSetup = [
 Player.prototype._initSocket = function () {
   _movementSetup.forEach(function(inputs) {
     this.sock.on(inputs[0], move.bind(this, inputs[1]));
-  }, this)
+  }, this);
 };
 
 function move(direction) {
   switch(direction) {
-    case "RIGHT": moveRight.apply(this); break;
-    case "LEFT" : moveLeft.apply(this) ; break;
-    case "DOWN" : moveDown.apply(this) ; break;
-    case "UP"   : moveUp.apply(this)   ; break;
+    case "RIGHT": this.moveRight(); break;
+    case "LEFT" : this.moveLeft() ; break;
+    case "DOWN" : this.moveDown() ; break;
+    case "UP"   : this.moveUp()   ; break;
   }
-}
-
-var moveSpeed = 5;
-
-function moveRight() {
-  this.position[0] += moveSpeed;
-}
-
-function moveLeft() {
-  this.position[0] -= moveSpeed;
-}
-
-function moveUp() {
-  this.position[1] -= moveSpeed;
-}
-
-function moveDown() {
-  this.position[1] += moveSpeed;
 }
 
 module.exports = Player;
