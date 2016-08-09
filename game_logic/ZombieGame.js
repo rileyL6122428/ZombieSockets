@@ -1,6 +1,6 @@
 // 'use strict'
 
-var Boundary = require('./Boundary.js');
+var Boundary = require('./boundary2.js');
 var Player = require('./Player.js');
 var HumanPlayer = require('./Human.js');
 var ZombiePlayer = require('./Zombie.js');
