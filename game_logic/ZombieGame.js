@@ -1,12 +1,12 @@
 'use strict'
-// var Boundary = require(__dirname + '/Boundary.js');
+var Boundary = require(__dirname + '/Boundary.js');
 var Player = require('./Player.js');
 var HumanPlayer = require('./Human.js');
 var ZombiePlayer = require('./Zombie.js');
 
 function ZombieTestDemo(sock1, sock2, io) {
   this._players = [new ZombiePlayer(sock1), new HumanPlayer(sock2)];
-  // this.boundary = new Boundary(500, 500);
+  this.boundary = new Boundary(500, 500);
   this._initSockets(io);
   this.setupPositionUpdateCallback(io);
 }
@@ -24,7 +24,7 @@ ZombieTestDemo.prototype.playerPositions = function () {
   var positions = [];
   var zGame = this;
   zGame._players.forEach(function(player) {
-    // zGame.boundary.contain(player);
+    zGame.boundary.contain(player);
     positions.push(player.position);
   });
   return positions;

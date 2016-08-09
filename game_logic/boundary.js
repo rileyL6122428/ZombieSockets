@@ -1,9 +1,9 @@
-function GameBoundary(width, height) {
+function Boundary(width, height) {
   this.bounds = [width, height];
 }
 
 
-GameBoundary.prototype.contain = function (player) {
+Boundary.prototype.contain = function (player) {
   for (var i = 0; i < player.position.length; i++) {
     var boundCoeff = this.bounds[i] - player.radius;
     player.position[i] = Math.max(player.position[i], -boundCoeff);
@@ -13,4 +13,4 @@ GameBoundary.prototype.contain = function (player) {
 
 //
 
-module.exports = GameBoundary;
+module.exports = Boundary;
