@@ -1,4 +1,4 @@
-'use strict'
+// 'use strict'
 
 var Boundary = require('./Boundary.js');
 var Player = require('./Player.js');
