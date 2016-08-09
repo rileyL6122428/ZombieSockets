@@ -49,23 +49,23 @@
 	var halfWidth = (canvas.clientWidth - 30) / 2;
 	var halfHeight = (canvas.clientHeight - 30) / 2;
 	
-	var sock = io()
+	var sock = io();
 	var socketInitializer = __webpack_require__(1);
 	var inputHandler = __webpack_require__(2);
 	var renderer = __webpack_require__(3);
-	
 	var playerPositions = [[0, 0], [0, 0]];
-	sock.on('register player number', (idx) => { renderer.setPlayerIndex(idx); });
+	
+	socketInitializer.initializeSockets(sock, playerPositions);
+	renderer.setSocketListeners(sock);
 	
 	var renderID = setInterval(function() {
 	  if(renderer.readyToRender()) {
-	    renderer.renderCanvasEl(ctx, sock, playerPositions, halfWidth, halfHeight);
+	    renderer.renderCanvasEl(ctx, playerPositions, halfWidth, halfHeight, sock);
 	    inputHandler.handleInput(sock);
 	  }
 	}, 1000/30);
 	
 	window.addEventListener("beforeunload", (e) => { clearInterval(renderID); });
-	socketInitializer.initializeSockets(sock, playerPositions);
 
 
 /***/ },
@@ -129,34 +129,59 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var inputHandler = __webpack_require__(2);
-	var pIdx;
+	var playerIdx;
+	var zombieIdxs = {};
 	
-	// NOTE posits => 'positions'
-	
-	module.exports = {
-	  renderCanvasEl: function (ctx, sock, posits, halfWidth, halfHeight) {
+	var renderer = {
+	  renderCanvasEl: function (ctx, positions, halfWidth, halfHeight) {
 	    ctx.clearRect(0, 0, 800, 550);
-	
-	    ctx.translate(-posits[pIdx][0] + halfWidth, -posits[pIdx][1] + halfHeight);
-	    renderBoundary(ctx);
-	    renderPlayers(posits, ctx);
-	    ctx.translate(posits[pIdx][0] - halfWidth, posits[pIdx][1] - halfHeight);
+	    _render(ctx, positions, halfWidth, halfHeight);
 	  },
 	
-	  setPlayerIndex: function(idx) { pIdx = idx; },
+	  setSocketListeners: function (s) {
+	    _setZombieStatusListener(s);
+	    _setPlayerIndexListener(s);
+	  },
 	
-	  readyToRender: function () { return pIdx !== undefined; }
+	  readyToRender: function () { return playerIdx !== undefined; }
 	};
 	
-	function renderPlayers(posits, ctx) {
-	  posits.forEach(function(pos) {
+	function _setZombieStatusListener(s) {
+	  s.on("Is a Zombie", (idx) => {
+	    console.log("Im a zombie");
+	    zombieIdxs[idx] = true;
+	  } );
+	}
+	
+	function _setPlayerIndexListener(s) {
+	  s.on('register player number', (idx) => { playerIdx = idx; });
+	}
+	
+	function _render(ctx, positions, halfWidth, halfHeight) {
+	  var translatedX = -positions[playerIdx][0] + halfWidth;
+	  var translatedY = -positions[playerIdx][1] + halfHeight;
+	
+	  ctx.translate(translatedX, translatedY);
+	  renderBoundary(ctx);
+	  _renderPlayers(positions, ctx);
+	  ctx.translate(-translatedX, -translatedY);
+	}
+	
+	function _renderPlayers(positions, ctx) {
+	  positions.forEach(function(pos, idx) {
+	    if(zombieIdxs[idx]) { ctx.strokeStyle = 'green'; }
 	    ctx.beginPath();
+	
 	    ctx.arc(pos[0], pos[1], 15, 0, 2 * Math.PI, false);
+	
 	    ctx.stroke();
+	    if(zombieIdxs[idx]) { ctx.strokeStyle = 'black';}
 	  });
 	}
 	
 	function renderBoundary(ctx) { ctx.strokeRect(-500, -500, 1000, 1000); }
+	
+	module.exports = renderer;
 
 
 /***/ }

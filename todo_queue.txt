@@ -2,6 +2,7 @@ Heroku:https://pure-wave-76976.herokuapp.com/ | https://git.heroku.com/pure-wave
 
 Next Steps:
 start a character out as a zombie
+make zombie character random
 transfer zombie property on tag
 End game when one human remains
 add more characters to each session (maybe 8)

@@ -1,5 +1,6 @@
 var inputHandler = require("../utils/player_input_handler.js");
 var playerIdx;
+var zombieIdxs = {};
 
 var renderer = {
   renderCanvasEl: function (ctx, positions, halfWidth, halfHeight) {
@@ -7,9 +8,24 @@ var renderer = {
     _render(ctx, positions, halfWidth, halfHeight);
   },
 
-  setPlayerIndex: function(idx) { playerIdx = idx; },
+  setSocketListeners: function (s) {
+    _setZombieStatusListener(s);
+    _setPlayerIndexListener(s);
+  },
+
   readyToRender: function () { return playerIdx !== undefined; }
 };
+
+function _setZombieStatusListener(s) {
+  s.on("Is a Zombie", (idx) => {
+    console.log("Im a zombie");
+    zombieIdxs[idx] = true;
+  } );
+}
+
+function _setPlayerIndexListener(s) {
+  s.on('register player number', (idx) => { playerIdx = idx; });
+}
 
 function _render(ctx, positions, halfWidth, halfHeight) {
   var translatedX = -positions[playerIdx][0] + halfWidth;
@@ -22,10 +38,14 @@ function _render(ctx, positions, halfWidth, halfHeight) {
 }
 
 function _renderPlayers(positions, ctx) {
-  positions.forEach(function(pos) {
+  positions.forEach(function(pos, idx) {
+    if(zombieIdxs[idx]) { ctx.strokeStyle = 'green'; }
     ctx.beginPath();
+
     ctx.arc(pos[0], pos[1], 15, 0, 2 * Math.PI, false);
+
     ctx.stroke();
+    if(zombieIdxs[idx]) { ctx.strokeStyle = 'black';}
   });
 }
 
