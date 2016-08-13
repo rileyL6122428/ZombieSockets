@@ -7,21 +7,23 @@ var HumanPlayer = require('./Human.js');
 var ZombiePlayer = require('./Zombie.js');
 
 function ZombieTestDemo(socks, io) {
-  var shuffledSocks = SocketShuffler.shuffledSockets(socks);
-  // this._players = [new ZombiePlayer(shuffledSocks[0]), new HumanPlayer(shuffledSocks[1])];
-  this._players = [new ZombiePlayer(shuffledSocks[0])];
-  for (var i = 1; i < shuffledSocks.length; i++) {
-    this._players.push(new HumanPlayer(shuffledSocks[i]));
-  }
-
-
-  this._zombies = [this._players[0]];
-  this._humans = this._players.slice(1);
-
+  this.initializePlayers(socks);
   this.boundary = new Boundary(500, 500);
   this._initSockets(io);
   this.setupClientUpdateCallback(io);
 }
+
+ZombieTestDemo.prototype.initializePlayers = function (socks) {
+  var shuffledSocks = SocketShuffler.shuffledSockets(socks);
+  this._players = [new ZombiePlayer(shuffledSocks[0])];
+
+  for (var i = 1; i < shuffledSocks.length; i++) {
+    this._players.push(new HumanPlayer(shuffledSocks[i]));
+  }
+
+  this._zombies = [this._players[0]];
+  this._humans = this._players.slice(1);
+};
 
 ZombieTestDemo.prototype._initSockets = function (io) {
   this._players.forEach(function(player, idx) {
