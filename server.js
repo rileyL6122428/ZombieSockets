@@ -39,6 +39,6 @@ function setUpGame(sock) {
     playerSocks = [];
 
   } else {
-    sock.emit('msg', 'you are waiting for a second player');
+    sock.emit('msg', 'you are waiting for more players');
   }
 }
