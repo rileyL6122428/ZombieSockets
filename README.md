@@ -6,8 +6,8 @@ time, multiplayer play.
 
 The development demo of this game can be found [here][heroku]. The demo
 character (an unfilled circle) can be moved by pressing the w,a,s,d keys.
-*NOTE* Currently, to start the demo, two users must be on the site at
+*NOTE* Currently, to start the demo, four users must be on the site at
 the same time. For a single visitor, this can be accomplished by opening
-two browser windows and signing onto the site.
+four browser windows and signing onto the site.
 
 [heroku]: https://pure-wave-76976.herokuapp.com/
