@@ -1,4 +1,5 @@
 // 'use strict'
+var CollisionChecker = require('./utils/zombie_collision_checker.js');
 var SocketShuffler = require('./utils/socket_shuffler.js');
 var Boundary = require('./boundary2.js');
 var Player = require('./Player.js');
@@ -8,7 +9,7 @@ var ZombiePlayer = require('./Zombie.js');
 function ZombieTestDemo(sock1, sock2, io) {
   var shuffledSocks = SocketShuffler.shuffledSockets([sock1, sock2]);
   this._players = [new ZombiePlayer(shuffledSocks[0]), new HumanPlayer(shuffledSocks[1])];
-  this._zombies = this._players[0];
+  this._zombies = [this._players[0]];
   this._humans = this._players.slice(1);
 
   this.boundary = new Boundary(500, 500);
@@ -38,6 +39,10 @@ ZombieTestDemo.prototype.playerPositions = function () {
 ZombieTestDemo.prototype.setupClientUpdateCallback = function (io) {
   var that = this;
   setInterval(function () {
+    CollisionChecker.detectZombieCatches(
+      that._humans, that._zombies, that._players, io
+    );
+
     io.emit('position update', that.playerPositions());
   }, 1000/30);
 };
