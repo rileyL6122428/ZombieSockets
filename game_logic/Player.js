@@ -19,7 +19,7 @@ var _movementSetup = [
   ['move left', "LEFT"],
   ['move down', "DOWN"],
   ['move up', "UP"]
-]
+];
 
 Player.prototype._initSocket = function () {
   _movementSetup.forEach(function(inputs) {

@@ -28,14 +28,29 @@ function onConnection(sock) {
   setUpGame(sock);
 }
 
-function setUpGame(sock) {
-  if(waitingPlayer) {
+var playerSocks = [];
 
-    new ZombieGame(waitingPlayer, sock, io);
-    waitingPlayer = null;
+function setUpGame(sock) {
+  playerSocks.push(sock);
+
+  if(playerSocks.length === 4) {
+    new ZombieGame(playerSocks, io);
     io.emit('msg', 'you are matched!');
+    playerSocks = [];
+
   } else {
-    waitingPlayer = sock;
     sock.emit('msg', 'you are waiting for a second player');
   }
 }
+
+// function setUpGame(sock) {
+//   if(waitingPlayer) {
+//
+//     new ZombieGame(waitingPlayer, sock, io);
+//     waitingPlayer = null;
+//     io.emit('msg', 'you are matched!');
+//   } else {
+//     waitingPlayer = sock;
+//     sock.emit('msg', 'you are waiting for a second player');
+//   }
+// }

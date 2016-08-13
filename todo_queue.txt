@@ -3,14 +3,7 @@ Heroku:https://pure-wave-76976.herokuapp.com/ | https://git.heroku.com/pure-wave
 Next Steps:
 
 
-transfer zombie property on tag (contact)
-End game when one human remains
 add more characters to each session (maybe 8)
+End game when one human remains
 Organize multiple games
 flesh out extra mechanics, including scoreable mechanics
-
-
-ZOMBIE Change game plan
-if a player is chosen to be a zombie, they instantiate as a new Zombie
-if a player is chosen to be a human, they instantiate as a new Human
-When caught, the player will be reinstantiated as a zombie

@@ -6,9 +6,15 @@ var Player = require('./Player.js');
 var HumanPlayer = require('./Human.js');
 var ZombiePlayer = require('./Zombie.js');
 
-function ZombieTestDemo(sock1, sock2, io) {
-  var shuffledSocks = SocketShuffler.shuffledSockets([sock1, sock2]);
-  this._players = [new ZombiePlayer(shuffledSocks[0]), new HumanPlayer(shuffledSocks[1])];
+function ZombieTestDemo(socks, io) {
+  var shuffledSocks = SocketShuffler.shuffledSockets(socks);
+  // this._players = [new ZombiePlayer(shuffledSocks[0]), new HumanPlayer(shuffledSocks[1])];
+  this._players = [new ZombiePlayer(shuffledSocks[0])];
+  for (var i = 1; i < shuffledSocks.length; i++) {
+    this._players.push(new HumanPlayer(shuffledSocks[i]));
+  }
+
+
   this._zombies = [this._players[0]];
   this._humans = this._players.slice(1);
 

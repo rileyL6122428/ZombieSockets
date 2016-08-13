@@ -12,6 +12,7 @@ module.exports = {
           humans.splice(hIdx, 1);
           zombies.push(players[playerIdx]);
           io.emit("Is a Zombie", playerIdx);
+          
           // NOTE consider changing this data structure for constant time
           // removal some time in the future
         }
