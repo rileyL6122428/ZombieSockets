@@ -3,6 +3,11 @@ module.exports = {
     this.setupHandshakeReciever(sock);
     this.setupNotificationReciever(sock);
     this.setupPositionReciever(sock, positions);
+    this.setupGameOverReceiver(sock);
+  },
+
+  setupGameOverReceiver: function (sock) {
+    sock.on('game over', () => { console.log("game is over"); });
   },
 
   setupPositionReciever: function (sock, positions) {

@@ -44,12 +44,18 @@ ZombieTestDemo.prototype.playerPositions = function () {
   return positions;
 };
 
+ZombieTestDemo.prototype.gameOver = function () {
+  return this._zombies.length === 4;
+};
+
 ZombieTestDemo.prototype.setupClientUpdateCallback = function (io) {
   var that = this;
   setInterval(function () {
     CollisionChecker.detectZombieCatches(
       that._humans, that._zombies, that._players, io
     );
+
+    if(that.gameOver()) { io.emit('game over'); }
 
     io.emit('position update', that.playerPositions());
   }, 1000/30);

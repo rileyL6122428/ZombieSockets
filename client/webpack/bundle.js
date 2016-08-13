@@ -77,6 +77,11 @@
 	    this.setupHandshakeReciever(sock);
 	    this.setupNotificationReciever(sock);
 	    this.setupPositionReciever(sock, positions);
+	    this.setupGameOverReceiver(sock);
+	  },
+	
+	  setupGameOverReceiver: function (sock) {
+	    sock.on('game over', () => { console.log("game is over"); });
 	  },
 	
 	  setupPositionReciever: function (sock, positions) {
@@ -147,10 +152,7 @@
 	};
 	
 	function _setZombieStatusListener(s) {
-	  s.on("Is a Zombie", (idx) => {
-	    console.log("Im a zombie");
-	    zombieIdxs[idx] = true;
-	  } );
+	  s.on("Is a Zombie", (idx) => { zombieIdxs[idx] = true; });
 	}
 	
 	function _setPlayerIndexListener(s) {

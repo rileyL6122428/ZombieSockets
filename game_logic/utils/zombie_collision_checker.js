@@ -14,7 +14,7 @@ module.exports = {
           zombies.push(players[playerIdx]);
           io.emit("Is a Zombie", playerIdx);
 
-          // NOTE consider changing this data structure for constant time
+          // NOTE consider changing the player data structure for constant time
           // removal at some point in the future
         }
       }
