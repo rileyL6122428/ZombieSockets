@@ -36,4 +36,9 @@ function move(direction) {
   }
 }
 
+Player.prototype.moveRight = function() { this.position[0] += this.moveSpeed; }
+Player.prototype.moveLeft  = function() { this.position[0] -= this.moveSpeed; }
+Player.prototype.moveDown  = function() { this.position[1] += this.moveSpeed; }
+Player.prototype.moveUp    = function() { this.position[1] -= this.moveSpeed; }
+
 module.exports = Player;

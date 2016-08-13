@@ -2,8 +2,6 @@ Heroku:https://pure-wave-76976.herokuapp.com/ | https://git.heroku.com/pure-wave
 
 Next Steps:
 
-
-add more characters to each session (maybe 8)
 End game when one human remains
 Organize multiple games
 flesh out extra mechanics, including scoreable mechanics
