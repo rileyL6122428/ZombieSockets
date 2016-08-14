@@ -11,6 +11,7 @@ var playerPositions = [[0, 0], [0, 0]];
 
 socketInitializer.initializeSockets(sock, playerPositions);
 renderer.setSocketListeners(sock);
+inputHandler.registerGameOverCB(sock);
 
 var renderID = setInterval(function() {
   if(renderer.readyToRender()) {

@@ -57,6 +57,7 @@
 	
 	socketInitializer.initializeSockets(sock, playerPositions);
 	renderer.setSocketListeners(sock);
+	inputHandler.registerGameOverCB(sock);
 	
 	var renderID = setInterval(function() {
 	  if(renderer.readyToRender()) {
@@ -77,11 +78,6 @@
 	    this.setupHandshakeReciever(sock);
 	    this.setupNotificationReciever(sock);
 	    this.setupPositionReciever(sock, positions);
-	    this.setupGameOverReceiver(sock);
-	  },
-	
-	  setupGameOverReceiver: function (sock) {
-	    sock.on('game over', () => { console.log("game is over"); });
 	  },
 	
 	  setupPositionReciever: function (sock, positions) {
@@ -120,11 +116,17 @@
 	  ['w', 'move up']
 	]
 	
+	var gameOver = false;
+	
 	module.exports = {
 	  handleInput: function(sock) {
 	    _inputSetup.forEach(function(inputs) {
-	      if(key.isPressed(inputs[0])) {　sock.emit(inputs[1]); }
+	      if(key.isPressed(inputs[0]) && !gameOver) {　sock.emit(inputs[1]); }
 	    });
+	  },
+	
+	  registerGameOverCB: function (sock) {
+	    sock.on('game over', () => { gameOver = true; });
 	  }
 	}
 
@@ -136,6 +138,7 @@
 	var inputHandler = __webpack_require__(2);
 	var playerIdx;
 	var zombieIdxs = {};
+	var gameOver = false;
 	
 	var renderer = {
 	  renderCanvasEl: function (ctx, positions, halfWidth, halfHeight) {
@@ -146,10 +149,15 @@
 	  setSocketListeners: function (s) {
 	    _setZombieStatusListener(s);
 	    _setPlayerIndexListener(s);
+	    _setGameoverListener(s);
 	  },
 	
 	  readyToRender: function () { return playerIdx !== undefined; }
 	};
+	
+	function _setGameoverListener(s) {
+	  s.on("game over", () => { gameOver = true; })
+	}
 	
 	function _setZombieStatusListener(s) {
 	  s.on("Is a Zombie", (idx) => { zombieIdxs[idx] = true; });
@@ -163,6 +171,10 @@
 	  var translatedX = -positions[playerIdx][0] + halfWidth;
 	  var translatedY = -positions[playerIdx][1] + halfHeight;
 	
+	  if(gameOver) {
+	    ctx.font = "48px serif";
+	    ctx.strokeText("GAME OVER", halfWidth - 150, halfHeight);
+	  }
 	  ctx.translate(translatedX, translatedY);
 	  renderBoundary(ctx);
 	  _renderPlayers(positions, ctx);
@@ -173,9 +185,7 @@
 	  positions.forEach(function(pos, idx) {
 	    if(zombieIdxs[idx]) { ctx.strokeStyle = 'green'; }
 	    ctx.beginPath();
-	
 	    ctx.arc(pos[0], pos[1], 15, 0, 2 * Math.PI, false);
-	
 	    ctx.stroke();
 	    if(zombieIdxs[idx]) { ctx.strokeStyle = 'black';}
 	  });

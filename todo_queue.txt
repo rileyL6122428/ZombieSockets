@@ -2,6 +2,6 @@ Heroku:https://pure-wave-76976.herokuapp.com/ | https://git.heroku.com/pure-wave
 
 Next Steps:
 
-End game when one human remains
+
 Organize multiple games
 flesh out extra mechanics, including scoreable mechanics

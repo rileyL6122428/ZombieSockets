@@ -45,7 +45,7 @@ ZombieTestDemo.prototype.playerPositions = function () {
 };
 
 ZombieTestDemo.prototype.gameOver = function () {
-  return this._zombies.length === 4;
+  return this._zombies.length === 2;
 };
 
 ZombieTestDemo.prototype.setupClientUpdateCallback = function (io) {

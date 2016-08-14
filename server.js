@@ -33,7 +33,7 @@ var playerSocks = [];
 function setUpGame(sock) {
   playerSocks.push(sock);
 
-  if(playerSocks.length === 4) {
+  if(playerSocks.length === 2) {
     new ZombieGame(playerSocks, io);
     io.emit('msg', 'you are matched!');
     playerSocks = [];
