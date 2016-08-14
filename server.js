@@ -8,8 +8,7 @@ var app = express();
 var server = http.createServer(app);
 var io = socketio(server);
 
-var ZombieGame = require('./game_logic/ZombieGame.js');
-let waitingPlayer;
+var ZombieGame = require('./server_side_logic/game/ZombieGame.js');
 
 io.on('connection', onConnection);
 

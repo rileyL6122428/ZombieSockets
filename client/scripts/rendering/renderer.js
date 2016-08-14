@@ -38,6 +38,7 @@ function _render(ctx, positions, halfWidth, halfHeight) {
     ctx.font = "48px serif";
     ctx.strokeText("GAME OVER", halfWidth - 150, halfHeight);
   }
+  
   ctx.translate(translatedX, translatedY);
   renderBoundary(ctx);
   _renderPlayers(positions, ctx);
