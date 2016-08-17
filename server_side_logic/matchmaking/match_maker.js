@@ -35,7 +35,7 @@ MatchMaker.prototype.direct = function (sock, io) {
   this.unallocatedSocks.push(sock);
   this.totalsTracker.playersWaiting += 1;
 
-  sock.on('join game', joinGame.call(gameIdx, sock, io));
+  sock.on('join game', joinGame);
 };
 
 function joinGame(gameIdx, sock, io) {

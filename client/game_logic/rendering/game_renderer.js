@@ -3,7 +3,7 @@ var playerIdx;
 var zombieIdxs = {};
 var gameOver = false;
 
-var renderer = {
+var GameRenderer = {
   renderCanvasEl: function (ctx, positions, halfWidth, halfHeight) {
     ctx.clearRect(0, 0, 800, 550);
     _render(ctx, positions, halfWidth, halfHeight);
@@ -38,7 +38,7 @@ function _render(ctx, positions, halfWidth, halfHeight) {
     ctx.font = "48px serif";
     ctx.strokeText("GAME OVER", halfWidth - 150, halfHeight);
   }
-  
+
   ctx.translate(translatedX, translatedY);
   renderBoundary(ctx);
   _renderPlayers(positions, ctx);
@@ -57,4 +57,4 @@ function _renderPlayers(positions, ctx) {
 
 function renderBoundary(ctx) { ctx.strokeRect(-500, -500, 1000, 1000); }
 
-module.exports = renderer;
+module.exports = GameRenderer;

@@ -8,7 +8,8 @@ var app = express();
 var server = http.createServer(app);
 var io = socketio(server);
 
-var MatchMaker = require('./server_side_logic/match_maker.js');
+var MatchMaker = require('./server_side_logic/matchmaking/match_maker.js');
+var matchMaker = new MatchMaker();
 // var ZombieGame = require('./server_side_logic/game/ZombieGame.js');
 
 
@@ -26,7 +27,7 @@ io.on('connection', onConnection);
 
 function onConnection(sock) {
   io.emit('handShake', 'Hand Shake Established');
-  MatchMaker.direct(sock, io);
+  matchMaker.direct(sock, io);
 }
 
 // function onConnection(sock) {

@@ -52,18 +52,21 @@
 	var sock = io();
 	var socketInitializer = __webpack_require__(1);
 	var inputHandler = __webpack_require__(2);
-	var renderer = __webpack_require__(3);
+	var GameRenderer = __webpack_require__(4);
+	var MatchmakingRenderer = __webpack_require__(5);
+	
 	var playerPositions = [[0, 0], [0, 0]];
 	
 	socketInitializer.initializeSockets(sock, playerPositions);
-	renderer.setSocketListeners(sock);
+	GameRenderer.setSocketListeners(sock);
 	inputHandler.registerGameOverCB(sock);
 	
 	var renderID = setInterval(function() {
-	  if(renderer.readyToRender()) {
-	    renderer.renderCanvasEl(ctx, playerPositions, halfWidth, halfHeight, sock);
-	    inputHandler.handleInput(sock);
-	  }
+	  // if(GameRenderer.readyToRender()) {
+	    // GameRenderer.renderCanvasEl(ctx, playerPositions, halfWidth, halfHeight, sock);
+	    // inputHandler.handleInput(sock);
+	    MatchmakingRenderer.render(ctx);
+	  // }
 	}, 1000/30);
 	
 	window.addEventListener("beforeunload", (e) => { clearInterval(renderID); });
@@ -132,7 +135,8 @@
 
 
 /***/ },
-/* 3 */
+/* 3 */,
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var inputHandler = __webpack_require__(2);
@@ -140,7 +144,7 @@
 	var zombieIdxs = {};
 	var gameOver = false;
 	
-	var renderer = {
+	var GameRenderer = {
 	  renderCanvasEl: function (ctx, positions, halfWidth, halfHeight) {
 	    ctx.clearRect(0, 0, 800, 550);
 	    _render(ctx, positions, halfWidth, halfHeight);
@@ -175,7 +179,7 @@
 	    ctx.font = "48px serif";
 	    ctx.strokeText("GAME OVER", halfWidth - 150, halfHeight);
 	  }
-	  
+	
 	  ctx.translate(translatedX, translatedY);
 	  renderBoundary(ctx);
 	  _renderPlayers(positions, ctx);
@@ -194,7 +198,23 @@
 	
 	function renderBoundary(ctx) { ctx.strokeRect(-500, -500, 1000, 1000); }
 	
-	module.exports = renderer;
+	module.exports = GameRenderer;
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	var MatchmakingRenderer = {
+	  render: function (ctx) {
+	    ctx.font = "48px serif";
+	    ctx.strokeStyle = "#FF0000"
+	    ctx.strokeText("Matchmaking Test", 200, 200);
+	    console.log("Hello");
+	  }
+	};
+	
+	module.exports = MatchmakingRenderer;
 
 
 /***/ }
