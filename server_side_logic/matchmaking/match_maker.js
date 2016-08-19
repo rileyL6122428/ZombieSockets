@@ -1,9 +1,11 @@
 var ZombieGame = require('../game/ZombieGame.js');
 var GameConstants = require('../utils/constants.js');
+var ClientUpdater = require('./client_updater.js');
 
 function MatchMaker() {
   this.initializeHolders();
-  this.initializeUpdaters();
+  ClientUpdater.initialize(this.games, this.players, this.unallocatedSocks);
+  // this.initializeUpdaters();
 }
 
 MatchMaker.prototype.initializeHolders = function () {
@@ -11,31 +13,27 @@ MatchMaker.prototype.initializeHolders = function () {
   this.players = [];
   this.games = [];
 
-  this.totalsTracker = {
-    playerTotals: [],
-    playersWaiting: 0
-  }; // will track players in each game and players currently waiting
-
   for (var i = 0; i < GameConstants.GAME_TOTAL; i++) {
-    this.totalsTracker.playerTotals.push([0]);
     this.players.push([]);
     this.games  .push([]);
   }
 };
 
-MatchMaker.prototype.initializeUpdaters = function () {
-  this.intervalId = setInterval(function() {
-    this.unallocatedSocks.forEach(function (sock) {
-      sock.emit('game totals', this.totalsTracker)
-    });
-  }.bind(this), 800);
-};
+// MatchMaker.prototype.initializeUpdaters = function () {
+//   this.intervalId = setInterval(function() {
+//     this.unallocatedSocks.forEach(function (sock) {
+//       sock.emit('game totals', this.totalsTracker)
+//     });
+//   }.bind(this), 800);
+// };
 
 MatchMaker.prototype.direct = function (sock, io) {
   this.unallocatedSocks.push(sock);
-  this.totalsTracker.playersWaiting += 1;
 
+  sock.emit('To Matchmaking')
   sock.on('join game', joinGame);
+  console.log("u made it here!");
+  ClientUpdater.update();
 };
 
 function joinGame(gameIdx, sock, io) {
@@ -48,10 +46,11 @@ function joinGame(gameIdx, sock, io) {
 
     this.players[gameIdx].push(sock);
 
-    this.totalsTracker.playersWaiting -= 1;
-    this.totalsTracker.playerTotals[gameIdx] += 1;
+    // this.totalsTracker.playersWaiting -= 1;
+    // this.totalsTracker.playerTotals[gameIdx] += 1;
 
     sock.emit('game entered');
+    ClientUpdater.update();
   }
 }
 

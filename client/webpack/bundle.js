@@ -45,164 +45,103 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var canvas = document.getElementById("canvas");
-	var ctx = canvas.getContext('2d');
-	var halfWidth = (canvas.clientWidth - 30) / 2;
-	var halfHeight = (canvas.clientHeight - 30) / 2;
-	
 	var sock = io();
-	var socketInitializer = __webpack_require__(1);
-	var inputHandler = __webpack_require__(2);
-	var GameRenderer = __webpack_require__(4);
-	var MatchmakingRenderer = __webpack_require__(5);
 	
-	var playerPositions = [[0, 0], [0, 0]];
+	var GameScript = __webpack_require__(1);
+	var MMScript   = __webpack_require__(2);
 	
-	socketInitializer.initializeSockets(sock, playerPositions);
-	GameRenderer.setSocketListeners(sock);
-	inputHandler.registerGameOverCB(sock);
 	
-	var renderID = setInterval(function() {
-	  // if(GameRenderer.readyToRender()) {
-	    // GameRenderer.renderCanvasEl(ctx, playerPositions, halfWidth, halfHeight, sock);
-	    // inputHandler.handleInput(sock);
-	    MatchmakingRenderer.render(ctx);
+	sock.on('To Matchmaking', runMatchMaking);
+	var matchmakingIntervalID;
+	function runMatchMaking() {
+	  // if(gameIntervalID) {
+	    // clearInterval(gameIntervalID);
 	  // }
-	}, 1000/30);
+	  MMScript.init(sock);
+	  matchmakingIntervalID = MMScript.run();
+	}
 	
-	window.addEventListener("beforeunload", (e) => { clearInterval(renderID); });
+	
+	// NOTE DO NOT DELETE THE FOLLOWING!!!
+	// sock.on('To Game', runGame);
+	// var gameIntervalID;
+	// function runGame() {
+	//   clearInterval(matchmakingIntervalID);
+	//   GameScript.init();
+	//   gameIntervalID = GameScript.run();
+	// }
+	
+	
+	window.addEventListener("beforeunload", (e) => {
+	  // TODO CLEAR INTERVALS
+	  // clearInterval(renderID);
+	});
 
 
 /***/ },
 /* 1 */
 /***/ function(module, exports) {
 
-	module.exports = {
-	  initializeSockets: function (sock, positions) {
-	    this.setupHandshakeReciever(sock);
-	    this.setupNotificationReciever(sock);
-	    this.setupPositionReciever(sock, positions);
-	  },
+	var GameScript = {
 	
-	  setupPositionReciever: function (sock, positions) {
-	    sock.on('position update', updatePositions);
-	    function updatePositions(posArr) {
-	      posArr.forEach((pos, idx) => { positions[idx] = posArr[idx]; });
-	    }
-	  },
+	};
 	
-	  setupHandshakeReciever: function (sock) {
-	    sock.on('handShake', onHandshake);
-	    function onHandshake(status) {
-	      var handShake = document.getElementById("hand-shake");
-	      handShake.innerHTML = status;
-	    }
-	  },
+	module.exports = GameScript;
 	
-	  setupNotificationReciever: function (sock) {
-	    sock.on('msg', onMsg);
-	    function onMsg(msg) {
-	      var status = document.getElementById("server-messages");
-	      status.innerHTML = msg;
-	    }
-	  }
-	}
+	// var ctx = canvas.getContext('2d');
+	// var halfWidth = (canvas.clientWidth - 30) / 2;
+	// var halfHeight = (canvas.clientHeight - 30) / 2;
+	
+	// var socketInitializer = require('./utils/socket_initializer.js');
+	// var inputHandler = require('./utils/player_input_handler.js');
+	// var GameRenderer = require('./rendering/game_renderer.js');
+	// var MatchmakingRenderer = require('./rendering/matchmaking_renderer.js');
+	
+	// var playerPositions = [[0, 0], [0, 0]];
+	
+	// socketInitializer.initializeSockets(sock, playerPositions);
+	// GameRenderer.setSocketListeners(sock);
+	// inputHandler.registerGameOverCB(sock);
+	
+	// var renderID = setInterval(function() {
+	  // if(GameRenderer.readyToRender()) {
+	    // GameRenderer.renderCanvasEl(ctx, playerPositions, halfWidth, halfHeight, sock);
+	    // inputHandler.handleInput(sock);
+	  // }
+	// }, 1000/30);
 
 
 /***/ },
 /* 2 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	var _inputSetup = [
-	  ['d', 'move right'],
-	  ['a', 'move left'],
-	  ['s', 'move down'],
-	  ['w', 'move up']
-	]
+	var Renderer = __webpack_require__(4);
+	var Store = __webpack_require__(5);
+	var sock;
 	
-	var gameOver = false;
-	
-	module.exports = {
-	  handleInput: function(sock) {
-	    _inputSetup.forEach(function(inputs) {
-	      if(key.isPressed(inputs[0]) && !gameOver) {　sock.emit(inputs[1]); }
-	    });
+	var MatchmakingScript = {
+	  init: function (s) {
+	    sock = s;
+	    Store.initialzeDataReceivers(sock);
 	  },
 	
-	  registerGameOverCB: function (sock) {
-	    sock.on('game over', () => { gameOver = true; });
+	  run: function (ctx) {
+	    var intervalId = setInterval(function() {
+	      Renderer.render(ctx);
+	
+	      // setup an input register method
+	    }, 1000 / 30);
+	
+	    return intervalId;
 	  }
-	}
+	};
+	
+	module.exports = MatchmakingScript;
 
 
 /***/ },
 /* 3 */,
 /* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var inputHandler = __webpack_require__(2);
-	var playerIdx;
-	var zombieIdxs = {};
-	var gameOver = false;
-	
-	var GameRenderer = {
-	  renderCanvasEl: function (ctx, positions, halfWidth, halfHeight) {
-	    ctx.clearRect(0, 0, 800, 550);
-	    _render(ctx, positions, halfWidth, halfHeight);
-	  },
-	
-	  setSocketListeners: function (s) {
-	    _setZombieStatusListener(s);
-	    _setPlayerIndexListener(s);
-	    _setGameoverListener(s);
-	  },
-	
-	  readyToRender: function () { return playerIdx !== undefined; }
-	};
-	
-	function _setGameoverListener(s) {
-	  s.on("game over", () => { gameOver = true; })
-	}
-	
-	function _setZombieStatusListener(s) {
-	  s.on("Is a Zombie", (idx) => { zombieIdxs[idx] = true; });
-	}
-	
-	function _setPlayerIndexListener(s) {
-	  s.on('register player number', (idx) => { playerIdx = idx; });
-	}
-	
-	function _render(ctx, positions, halfWidth, halfHeight) {
-	  var translatedX = -positions[playerIdx][0] + halfWidth;
-	  var translatedY = -positions[playerIdx][1] + halfHeight;
-	
-	  if(gameOver) {
-	    ctx.font = "48px serif";
-	    ctx.strokeText("GAME OVER", halfWidth - 150, halfHeight);
-	  }
-	
-	  ctx.translate(translatedX, translatedY);
-	  renderBoundary(ctx);
-	  _renderPlayers(positions, ctx);
-	  ctx.translate(-translatedX, -translatedY);
-	}
-	
-	function _renderPlayers(positions, ctx) {
-	  positions.forEach(function(pos, idx) {
-	    if(zombieIdxs[idx]) { ctx.strokeStyle = 'green'; }
-	    ctx.beginPath();
-	    ctx.arc(pos[0], pos[1], 15, 0, 2 * Math.PI, false);
-	    ctx.stroke();
-	    if(zombieIdxs[idx]) { ctx.strokeStyle = 'black';}
-	  });
-	}
-	
-	function renderBoundary(ctx) { ctx.strokeRect(-500, -500, 1000, 1000); }
-	
-	module.exports = GameRenderer;
-
-
-/***/ },
-/* 5 */
 /***/ function(module, exports) {
 
 	var MatchmakingRenderer = {
@@ -210,11 +149,41 @@
 	    ctx.font = "48px serif";
 	    ctx.strokeStyle = "#FF0000"
 	    ctx.strokeText("Matchmaking Test", 200, 200);
-	    console.log("Hello");
 	  }
 	};
 	
 	module.exports = MatchmakingRenderer;
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	// DATA WE NEED TO STORE
+	// 1) PLAYER TOTALS
+	// 2) Zombie TOTAL / per game
+	// 3) Human Total / per game
+	// 4) Game start time, or last endtime
+	// 5) number of players waiting
+	
+	var _data = {};
+	
+	module.exports = {
+	  initialzeDataReceivers: function (sock) {
+	    sock.on('mm update', receiveData);
+	    debugger
+	  },
+	
+	  getData: function() {
+	    return _data;
+	  }
+	};
+	
+	function receiveData(data) {
+	  debugger
+	  _data = data;
+	  console.log(data);
+	}
 
 
 /***/ }

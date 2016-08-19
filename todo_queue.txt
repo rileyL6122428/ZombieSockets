@@ -1,5 +1,8 @@
 Heroku:https://pure-wave-76976.herokuapp.com/ | https://git.heroku.com/pure-wave-76976.git
 
+
+1) GET DATA TO FRONT END
+
 Next Steps:
 
 Organize multiple games

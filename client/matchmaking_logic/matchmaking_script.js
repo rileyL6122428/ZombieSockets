@@ -1,15 +1,18 @@
-var Renderer = require('./utils/matchmaking_renderer.js');
+var Renderer = require('./utils/mm_renderer.js');
+var Store = require('./utils/mm_data_store.js');
+var sock;
 
 var MatchmakingScript = {
-  init: function () {
-
+  init: function (s) {
+    sock = s;
+    Store.initialzeDataReceivers(sock);
   },
 
   run: function (ctx) {
     var intervalId = setInterval(function() {
       Renderer.render(ctx);
 
-      // setup a input register method
+      // setup an input register method
     }, 1000 / 30);
 
     return intervalId;

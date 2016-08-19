@@ -28,6 +28,7 @@ io.on('connection', onConnection);
 function onConnection(sock) {
   io.emit('handShake', 'Hand Shake Established');
   matchMaker.direct(sock, io);
+  // sock.emit()
 }
 
 // function onConnection(sock) {
