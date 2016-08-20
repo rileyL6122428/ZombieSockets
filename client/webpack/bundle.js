@@ -45,11 +45,14 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var canvas = document.getElementById("canvas");
+	var ctx = canvas.getContext("2d");
 	var sock = io();
-	
 	var GameScript = __webpack_require__(1);
 	var MMScript   = __webpack_require__(2);
+	var Constants = __webpack_require__(5);
 	
+	debugger
+	Constants.initDimensions(canvas);
 	
 	sock.on('To Matchmaking', runMatchMaking);
 	var matchmakingIntervalID;
@@ -58,7 +61,7 @@
 	    // clearInterval(gameIntervalID);
 	  // }
 	  MMScript.init(sock);
-	  matchmakingIntervalID = MMScript.run();
+	  matchmakingIntervalID = MMScript.run(ctx);
 	}
 	
 	
@@ -115,8 +118,8 @@
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Renderer = __webpack_require__(4);
-	var Store = __webpack_require__(5);
+	var Renderer = __webpack_require__(3);
+	var Store = __webpack_require__(4);
 	var sock;
 	
 	var MatchmakingScript = {
@@ -140,15 +143,30 @@
 
 
 /***/ },
-/* 3 */,
-/* 4 */
-/***/ function(module, exports) {
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
 
+	var Store = __webpack_require__(4);
+	var Constants = __webpack_require__(5);
+	
 	var MatchmakingRenderer = {
 	  render: function (ctx) {
-	    ctx.font = "48px serif";
-	    ctx.strokeStyle = "#FF0000"
-	    ctx.strokeText("Matchmaking Test", 200, 200);
+	    ctx.clearRect(0, 0, Constants.CANVAS_WIDTH(), Constants.CANVAS_HEIGHT());
+	    ctx.fillStyle = "black"
+	
+	    ctx.font = "22px serif";
+	    ctx.fillText("Players Waiting: " + Store.waitingPlayerTotal(), 70, 50);
+	
+	    ctx.font = "24px serif";
+	    for (var row = 0; row < 2; row++) {
+	      for (var col = 0; col < 2; col++) {
+	        var gameNum = 1 + row * 2 + col;
+	        var drawX = col * 200 + 30;
+	        var drawY = row * 100 + 100;
+	
+	        ctx.fillText("Game " + gameNum, drawX, drawY);
+	      }
+	    }
 	  }
 	};
 	
@@ -156,7 +174,7 @@
 
 
 /***/ },
-/* 5 */
+/* 4 */
 /***/ function(module, exports) {
 
 	// DATA WE NEED TO STORE
@@ -171,19 +189,36 @@
 	module.exports = {
 	  initialzeDataReceivers: function (sock) {
 	    sock.on('mm update', receiveData);
-	    debugger
 	  },
 	
-	  getData: function() {
-	    return _data;
+	  waitingPlayerTotal: function() {
+	    return _data.waitingPlayerTotal
 	  }
 	};
 	
 	function receiveData(data) {
-	  debugger
 	  _data = data;
-	  console.log(data);
 	}
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	var _width;
+	var _height;
+	
+	module.exports = {
+	  CANVAS_WIDTH: getWidth,
+	  CANVAS_HEIGHT: getHeight,
+	  initDimensions: function(c) {
+	    _width = c.width;
+	    _height = c.height;
+	  }
+	};
+	
+	function getWidth()  { return _width;  }
+	function getHeight() { return _height; }
 
 
 /***/ }

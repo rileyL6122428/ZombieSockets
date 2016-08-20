@@ -10,16 +10,13 @@ var _data = {};
 module.exports = {
   initialzeDataReceivers: function (sock) {
     sock.on('mm update', receiveData);
-    debugger
   },
 
-  getData: function() {
-    return _data;
+  waitingPlayerTotal: function() {
+    return _data.waitingPlayerTotal
   }
 };
 
 function receiveData(data) {
-  debugger
   _data = data;
-  console.log(data);
 }

@@ -13,7 +13,6 @@ module.exports = {
   update: function () {
     var theData = data();
     waitingSocks.forEach((sock) => {
-      console.log("herro");
       sock.emit('mm update', theData);
     });
   }

@@ -5,7 +5,6 @@ var ClientUpdater = require('./client_updater.js');
 function MatchMaker() {
   this.initializeHolders();
   ClientUpdater.initialize(this.games, this.players, this.unallocatedSocks);
-  // this.initializeUpdaters();
 }
 
 MatchMaker.prototype.initializeHolders = function () {
@@ -19,20 +18,11 @@ MatchMaker.prototype.initializeHolders = function () {
   }
 };
 
-// MatchMaker.prototype.initializeUpdaters = function () {
-//   this.intervalId = setInterval(function() {
-//     this.unallocatedSocks.forEach(function (sock) {
-//       sock.emit('game totals', this.totalsTracker)
-//     });
-//   }.bind(this), 800);
-// };
-
 MatchMaker.prototype.direct = function (sock, io) {
   this.unallocatedSocks.push(sock);
 
   sock.emit('To Matchmaking')
   sock.on('join game', joinGame);
-  console.log("u made it here!");
   ClientUpdater.update();
 };
 
@@ -46,8 +36,6 @@ function joinGame(gameIdx, sock, io) {
 
     this.players[gameIdx].push(sock);
 
-    // this.totalsTracker.playersWaiting -= 1;
-    // this.totalsTracker.playerTotals[gameIdx] += 1;
 
     sock.emit('game entered');
     ClientUpdater.update();

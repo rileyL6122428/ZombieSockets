@@ -1,9 +1,12 @@
 var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
 var sock = io();
-
 var GameScript = require('./game_logic/game_script.js');
 var MMScript   = require('./matchmaking_logic/matchmaking_script.js');
+var Constants = require('./general_utils/constants');
 
+debugger
+Constants.initDimensions(canvas);
 
 sock.on('To Matchmaking', runMatchMaking);
 var matchmakingIntervalID;
@@ -12,7 +15,7 @@ function runMatchMaking() {
     // clearInterval(gameIntervalID);
   // }
   MMScript.init(sock);
-  matchmakingIntervalID = MMScript.run();
+  matchmakingIntervalID = MMScript.run(ctx);
 }
 
 
