@@ -22,9 +22,21 @@ MatchMaker.prototype.direct = function (sock, io) {
   this.unallocatedSocks.push(sock);
 
   sock.emit('To Matchmaking')
+  sock.on('disconnect', pullSockFromWaiting.bind(this, sock))
   sock.on('join game', joinGame);
   ClientUpdater.update();
 };
+
+function pullSockFromWaiting(sock) {
+  for (var i = 0; i < this.unallocatedSocks.length; i++) {
+    if(sock === this.unallocatedSocks[i]) {
+      this.unallocatedSocks.splice(i, 1);
+      break;
+    }
+  }
+
+  ClientUpdater.update();
+}
 
 function joinGame(gameIdx, sock, io) {
   if(this.players[gameIdx].length === GameConstants.PLAYER_TOTAL) {
