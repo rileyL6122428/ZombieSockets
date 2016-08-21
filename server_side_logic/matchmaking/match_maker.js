@@ -22,12 +22,12 @@ MatchMaker.prototype.direct = function (sock, io) {
   this.unallocatedSocks.push(sock);
 
   sock.emit('To Matchmaking')
-  sock.on('disconnect', pullSockFromWaiting.bind(this, sock))
+  sock.on('disconnect', ejectSockFromWaiting.bind(this, sock))
   sock.on('join game', joinGame);
   ClientUpdater.update();
 };
 
-function pullSockFromWaiting(sock) {
+function ejectSockFromWaiting(sock) {
   for (var i = 0; i < this.unallocatedSocks.length; i++) {
     if(sock === this.unallocatedSocks[i]) {
       this.unallocatedSocks.splice(i, 1);

@@ -1,5 +1,10 @@
 Heroku:https://pure-wave-76976.herokuapp.com/ | https://git.heroku.com/pure-wave-76976.git
 
+URGENT: Remove INTERVAL CB on document unload!
+        RE-RENDER ONLY WHEN NECESSARY
+
+RIGHT NOW
+  1) make games selectable (get cursor rendering and input up)
 
 1) GET DATA TO FRONT END
 

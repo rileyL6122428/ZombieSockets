@@ -5,7 +5,6 @@ var GameScript = require('./game_logic/game_script.js');
 var MMScript   = require('./matchmaking_logic/matchmaking_script.js');
 var Constants = require('./general_utils/constants');
 
-debugger
 Constants.initDimensions(canvas);
 
 sock.on('To Matchmaking', runMatchMaking);
@@ -31,5 +30,5 @@ function runMatchMaking() {
 
 window.addEventListener("beforeunload", (e) => {
   // TODO CLEAR INTERVALS
-  // clearInterval(renderID);
+  clearInterval(matchmakingIntervalID);
 });

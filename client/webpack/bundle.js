@@ -49,9 +49,8 @@
 	var sock = io();
 	var GameScript = __webpack_require__(1);
 	var MMScript   = __webpack_require__(2);
-	var Constants = __webpack_require__(5);
+	var Constants = __webpack_require__(6);
 	
-	debugger
 	Constants.initDimensions(canvas);
 	
 	sock.on('To Matchmaking', runMatchMaking);
@@ -77,7 +76,7 @@
 	
 	window.addEventListener("beforeunload", (e) => {
 	  // TODO CLEAR INTERVALS
-	  // clearInterval(renderID);
+	  clearInterval(matchmakingIntervalID);
 	});
 
 
@@ -120,6 +119,7 @@
 
 	var Renderer = __webpack_require__(3);
 	var Store = __webpack_require__(4);
+	var InputHandler = __webpack_require__(5);
 	var sock;
 	
 	var MatchmakingScript = {
@@ -131,7 +131,7 @@
 	  run: function (ctx) {
 	    var intervalId = setInterval(function() {
 	      Renderer.render(ctx);
-	
+	      InputHandler.handleInput();
 	      // setup an input register method
 	    }, 1000 / 30);
 	
@@ -147,28 +147,56 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Store = __webpack_require__(4);
-	var Constants = __webpack_require__(5);
+	var InputHandler = __webpack_require__(5);
+	var Constants = __webpack_require__(6);
 	
 	var MatchmakingRenderer = {
 	  render: function (ctx) {
 	    ctx.clearRect(0, 0, Constants.CANVAS_WIDTH(), Constants.CANVAS_HEIGHT());
 	    ctx.fillStyle = "black"
 	
-	    ctx.font = "22px serif";
-	    ctx.fillText("Players Waiting: " + Store.waitingPlayerTotal(), 70, 50);
+	    drawPlayerWaitingDisplay(ctx);
 	
-	    ctx.font = "24px serif";
 	    for (var row = 0; row < 2; row++) {
 	      for (var col = 0; col < 2; col++) {
-	        var gameNum = 1 + row * 2 + col;
-	        var drawX = col * 200 + 30;
-	        var drawY = row * 100 + 100;
-	
-	        ctx.fillText("Game " + gameNum, drawX, drawY);
+	        drawGameButton(ctx, row, col);
 	      }
 	    }
 	  }
 	};
+	
+	function drawPlayerWaitingDisplay(ctx) {
+	  ctx.font = "22px serif";
+	  ctx.fillText("Players Waiting: " + Store.waitingPlayerTotal(), 70, 50);
+	}
+	
+	function drawGameButton(ctx, row, col) {
+	  var gameNum = 1 + row * 2 + col;
+	  var drawX = col * 210 + 30;
+	  var drawY = row * 150 + 100;
+	
+	  ctx.font = "22px serif";
+	  ctx.fillText("Game " + gameNum, drawX, drawY);
+	
+	  drawCursor(gameNum, drawX, drawY, ctx);
+	
+	  ctx.font = "17px serif";
+	  ctx.fillText(
+	    "Players: " + Store.getGamePlayerTotal(gameNum - 1),
+	    drawX,
+	    drawY + 20
+	  );
+	}
+	
+	function drawCursor(gameNum, drawX, drawY, ctx) {
+	  if(gameNum - 1 === InputHandler.selectedGameIdx()) {
+	    ctx.beginPath();
+	    ctx.moveTo(drawX + 80, drawY);
+	    ctx.lineTo(drawX + 95, drawY + 10);
+	    ctx.lineTo(drawX + 95, drawY - 10);
+	    ctx.fill();
+	  }
+	}
 	
 	module.exports = MatchmakingRenderer;
 
@@ -193,6 +221,10 @@
 	
 	  waitingPlayerTotal: function() {
 	    return _data.waitingPlayerTotal
+	  },
+	
+	  getGamePlayerTotal: function (idx) {
+	    return _data.playerTotals[idx];
 	  }
 	};
 	
@@ -205,12 +237,79 @@
 /* 5 */
 /***/ function(module, exports) {
 
+	var _cursorPos = [0,0];
+	var _gameTotal = 4; //NOTE Consider having this val initialized by server
+	                    //     so that you don't have to manually set it
+	var _readyToMoveCursor = true;
+	
+	module.exports = {
+	  handleInput: function () {
+	    this.handleCursorScroll();
+	  },
+	
+	  handleCursorScroll: function() {
+	    if(_readyToMoveCursor) {
+	      scrollOnInput();
+	      //NOTE Maybe trade out the timeout above for a some date action for
+	      // smoother controls
+	    }
+	  },
+	
+	  selectedGameIdx: function () {
+	    return _cursorPos[0] * Math.floor(_gameTotal / 2) + _cursorPos[1];
+	  }
+	}
+	
+	var direcsAndCBs = [
+	  ["right", scrollRight],
+	  ["left", scrollLeft],
+	  ["up", scrollUp],
+	  ["down", scrollDown]
+	];
+	
+	function scrollOnInput() {
+	  for (var i = 0; i < direcsAndCBs.length; i++) {
+	    var direction = direcsAndCBs[i][0];
+	    var cb = direcsAndCBs[i][1];
+	    if(key.isPressed(direction)) {
+	      cb();
+	      _readyToMoveCursor = false;
+	      setTimeout(() => { _readyToMoveCursor = true }, 150);
+	      break;
+	    }
+	  }
+	}
+	
+	function scrollRight() {
+	  _cursorPos[1] = (_cursorPos[1] - 1) % Math.floor(_gameTotal / 2);
+	  if(_cursorPos[1] === -1) { _cursorPos[1] = 1; }
+	}
+	
+	function scrollLeft() {
+	  _cursorPos[1] = (_cursorPos[1] + 1) % Math.floor(_gameTotal / 2);
+	}
+	
+	function scrollUp() {
+	  _cursorPos[0] = (_cursorPos[0] + 1) % 2;
+	}
+	
+	function scrollDown() {
+	  _cursorPos[0] = (_cursorPos[0] - 1) % 2;
+	  if(_cursorPos[0] === -1) { _cursorPos[0] = Math.floor(_gameTotal / 2) - 1; }
+	}
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
 	var _width;
 	var _height;
 	
 	module.exports = {
 	  CANVAS_WIDTH: getWidth,
 	  CANVAS_HEIGHT: getHeight,
+	  
 	  initDimensions: function(c) {
 	    _width = c.width;
 	    _height = c.height;

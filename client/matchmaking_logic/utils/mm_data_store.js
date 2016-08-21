@@ -14,6 +14,10 @@ module.exports = {
 
   waitingPlayerTotal: function() {
     return _data.waitingPlayerTotal
+  },
+
+  getGamePlayerTotal: function (idx) {
+    return _data.playerTotals[idx];
   }
 };
 

@@ -1,8 +1,8 @@
 var _inputSetup = [
-  ['d', 'move right'],
-  ['a', 'move left'],
-  ['s', 'move down'],
-  ['w', 'move up']
+  ['right', 'move right'],
+  ['left', 'move left'],
+  ['down', 'move down'],
+  ['up', 'move up']
 ]
 
 var gameOver = false;
