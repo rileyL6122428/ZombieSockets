@@ -2,17 +2,27 @@ var _cursorPos = [0,0];
 var _gameTotal = 4; //NOTE Consider having this val initialized by server
                     //     so that you don't have to manually set it
 var _readyToMoveCursor = true;
+var _readyToChooseGame = true;
+var _sock;
 
 module.exports = {
+  init: function (sock) { _sock = sock; },
+
   handleInput: function () {
     this.handleCursorScroll();
+    this.handleGameSelection();
   },
 
   handleCursorScroll: function() {
-    if(_readyToMoveCursor) {
-      scrollOnInput();
-      //NOTE Maybe trade out the timeout above for a some date action for
-      // smoother controls
+    if(_readyToMoveCursor) { scrollOnInput(); }
+  },
+
+  handleGameSelection: function() {
+    var idx = this.selectedGameIdx();
+    if(key.isPressed('enter') && _readyToChooseGame) {
+
+      _sock.emit('select game', { gameIdx: idx });
+      _readyToChooseGame = false;
     }
   },
 

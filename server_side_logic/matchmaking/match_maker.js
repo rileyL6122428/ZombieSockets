@@ -23,7 +23,7 @@ MatchMaker.prototype.direct = function (sock, io) {
 
   sock.emit('To Matchmaking')
   sock.on('disconnect', ejectSockFromWaiting.bind(this, sock))
-  sock.on('join game', joinGame);
+  sock.on('select game', joinGame.bind(this, sock));
   ClientUpdater.update();
 };
 
@@ -38,40 +38,18 @@ function ejectSockFromWaiting(sock) {
   ClientUpdater.update();
 }
 
-function joinGame(gameIdx, sock, io) {
+function joinGame(sock, data) {
+  var gameIdx = data.gameIdx;
+
   if(this.players[gameIdx].length === GameConstants.PLAYER_TOTAL) {
     sock.emit('game full notification');
 
   } else {
-    var holdingCellIdx = this.unallocatedSocks.indexOf(sock);
-    this.unallocatedSocks.splice(holdingCellIdx, 1);
-
+    ejectSockFromWaiting.call(this, sock);
     this.players[gameIdx].push(sock);
-
-
     sock.emit('game entered');
     ClientUpdater.update();
   }
 }
-
-// function onConnection(sock) {
-//   io.emit('handShake', 'Hand Shake Established');
-//   setUpGame(sock);
-// }
-//
-// var playerSocks = [];
-//
-// function setUpGame(sock) {
-//   playerSocks.push(sock);
-//
-//   if(playerSocks.length === 2) {
-//     new ZombieGame(playerSocks, io);
-//     io.emit('msg', 'you are matched!');
-//     playerSocks = [];
-//
-//   } else {
-//     sock.emit('msg', 'you are waiting for more players');
-//   }
-// }
 
 module.exports = MatchMaker;

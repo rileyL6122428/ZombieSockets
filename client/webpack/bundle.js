@@ -73,6 +73,8 @@
 	//   gameIntervalID = GameScript.run();
 	// }
 	
+	sock.on('game entered', () => { console.log("entered game"); });
+	
 	
 	window.addEventListener("beforeunload", (e) => {
 	  // TODO CLEAR INTERVALS
@@ -124,15 +126,14 @@
 	
 	var MatchmakingScript = {
 	  init: function (s) {
-	    sock = s;
-	    Store.initialzeDataReceivers(sock);
+	    Store.initialzeDataReceivers(s);
+	    InputHandler.init(s);
 	  },
 	
 	  run: function (ctx) {
 	    var intervalId = setInterval(function() {
 	      Renderer.render(ctx);
 	      InputHandler.handleInput();
-	      // setup an input register method
 	    }, 1000 / 30);
 	
 	    return intervalId;
@@ -229,6 +230,7 @@
 	};
 	
 	function receiveData(data) {
+	  debugger
 	  _data = data;
 	}
 
@@ -241,17 +243,27 @@
 	var _gameTotal = 4; //NOTE Consider having this val initialized by server
 	                    //     so that you don't have to manually set it
 	var _readyToMoveCursor = true;
+	var _readyToChooseGame = true;
+	var _sock;
 	
 	module.exports = {
+	  init: function (sock) { _sock = sock; },
+	
 	  handleInput: function () {
 	    this.handleCursorScroll();
+	    this.handleGameSelection();
 	  },
 	
 	  handleCursorScroll: function() {
-	    if(_readyToMoveCursor) {
-	      scrollOnInput();
-	      //NOTE Maybe trade out the timeout above for a some date action for
-	      // smoother controls
+	    if(_readyToMoveCursor) { scrollOnInput(); }
+	  },
+	
+	  handleGameSelection: function() {
+	    var idx = this.selectedGameIdx();
+	    if(key.isPressed('enter') && _readyToChooseGame) {
+	
+	      _sock.emit('select game', { gameIdx: idx });
+	      _readyToChooseGame = false;
 	    }
 	  },
 	

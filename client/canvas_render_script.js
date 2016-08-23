@@ -27,6 +27,8 @@ function runMatchMaking() {
 //   gameIntervalID = GameScript.run();
 // }
 
+sock.on('game entered', () => { console.log("entered game"); });
+
 
 window.addEventListener("beforeunload", (e) => {
   // TODO CLEAR INTERVALS

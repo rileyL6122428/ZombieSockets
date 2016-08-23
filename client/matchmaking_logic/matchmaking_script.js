@@ -5,15 +5,14 @@ var sock;
 
 var MatchmakingScript = {
   init: function (s) {
-    sock = s;
-    Store.initialzeDataReceivers(sock);
+    Store.initialzeDataReceivers(s);
+    InputHandler.init(s);
   },
 
   run: function (ctx) {
     var intervalId = setInterval(function() {
       Renderer.render(ctx);
       InputHandler.handleInput();
-      // setup an input register method
     }, 1000 / 30);
 
     return intervalId;
