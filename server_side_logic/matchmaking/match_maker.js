@@ -18,12 +18,16 @@ MatchMaker.prototype.initializeHolders = function () {
   }
 };
 
-MatchMaker.prototype.direct = function (sock, io) {
+MatchMaker.prototype.direct = function (sock) {
   this.unallocatedSocks.push(sock);
 
+// NOTE CONSIDER BUNDLING THE BODY BELOW
   sock.emit('To Matchmaking')
-  sock.on('disconnect', ejectSockFromWaiting.bind(this, sock))
+  sock.emit("share game total", GameConstants.GAME_TOTAL);
+  sock.on('disconnect', ejectSockFromWaiting.bind(this, sock));
   sock.on('select game', joinGame.bind(this, sock));
+// NOTE END BUNDLE
+
   ClientUpdater.update();
 };
 
@@ -48,6 +52,7 @@ function joinGame(sock, data) {
     ejectSockFromWaiting.call(this, sock);
     this.players[gameIdx].push(sock);
     sock.emit('game entered');
+
     ClientUpdater.update();
   }
 }

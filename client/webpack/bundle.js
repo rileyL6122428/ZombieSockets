@@ -51,7 +51,10 @@
 	var MMScript   = __webpack_require__(2);
 	var Constants = __webpack_require__(6);
 	
+	// NOTE PROBALY WRAP THIS IN A GIANT INIT METHOD
 	Constants.initDimensions(canvas);
+	sock.on('share game total', Constants.initGameTotal);
+	// NOTE END INIT WRAPPING
 	
 	sock.on('To Matchmaking', runMatchMaking);
 	var matchmakingIntervalID;
@@ -230,24 +233,25 @@
 	};
 	
 	function receiveData(data) {
-	  debugger
 	  _data = data;
 	}
 
 
 /***/ },
 /* 5 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	var _cursorPos = [0,0];
-	var _gameTotal = 4; //NOTE Consider having this val initialized by server
-	                    //     so that you don't have to manually set it
+	var Constants = __webpack_require__(6);
+	
+	var _cursorPos = [0, 0];
 	var _readyToMoveCursor = true;
 	var _readyToChooseGame = true;
 	var _sock;
 	
 	module.exports = {
-	  init: function (sock) { _sock = sock; },
+	  init: function (sock) {
+	    _sock = sock;
+	  },
 	
 	  handleInput: function () {
 	    this.handleCursorScroll();
@@ -255,24 +259,27 @@
 	  },
 	
 	  handleCursorScroll: function() {
-	    if(_readyToMoveCursor) { scrollOnInput(); }
+	    if(_readyToMoveCursor) {
+	      scrollOnInput();
+	    }
 	  },
 	
 	  handleGameSelection: function() {
 	    var idx = this.selectedGameIdx();
 	    if(key.isPressed('enter') && _readyToChooseGame) {
-	
 	      _sock.emit('select game', { gameIdx: idx });
 	      _readyToChooseGame = false;
 	    }
 	  },
 	
 	  selectedGameIdx: function () {
-	    return _cursorPos[0] * Math.floor(_gameTotal / 2) + _cursorPos[1];
+	    return (
+	      _cursorPos[0] * Math.floor(Constants.GAME_TOTAL() / 2) + _cursorPos[1]
+	    );
 	  }
 	}
 	
-	var direcsAndCBs = [
+	var directionsAndCBs = [
 	  ["right", scrollRight],
 	  ["left", scrollLeft],
 	  ["up", scrollUp],
@@ -280,25 +287,32 @@
 	];
 	
 	function scrollOnInput() {
-	  for (var i = 0; i < direcsAndCBs.length; i++) {
-	    var direction = direcsAndCBs[i][0];
-	    var cb = direcsAndCBs[i][1];
+	  for (var i = 0; i < directionsAndCBs.length; i++) {
+	    var direction = directionsAndCBs[i][0];
+	    var cb = directionsAndCBs[i][1];
+	
 	    if(key.isPressed(direction)) {
 	      cb();
 	      _readyToMoveCursor = false;
-	      setTimeout(() => { _readyToMoveCursor = true }, 150);
+	
+	      setTimeout(function() {
+	        _readyToMoveCursor = true
+	      }, Constants.MM_SCROLL_COOLDOWN);
 	      break;
 	    }
 	  }
 	}
 	
 	function scrollRight() {
-	  _cursorPos[1] = (_cursorPos[1] - 1) % Math.floor(_gameTotal / 2);
-	  if(_cursorPos[1] === -1) { _cursorPos[1] = 1; }
+	  _cursorPos[1] = (_cursorPos[1] - 1) % Math.floor(Constants.GAME_TOTAL() / 2);
+	
+	  if(_cursorPos[1] === -1) {
+	    _cursorPos[1] = 1;
+	  }
 	}
 	
 	function scrollLeft() {
-	  _cursorPos[1] = (_cursorPos[1] + 1) % Math.floor(_gameTotal / 2);
+	  _cursorPos[1] = (_cursorPos[1] + 1) % Math.floor(Constants.GAME_TOTAL() / 2);
 	}
 	
 	function scrollUp() {
@@ -307,7 +321,10 @@
 	
 	function scrollDown() {
 	  _cursorPos[0] = (_cursorPos[0] - 1) % 2;
-	  if(_cursorPos[0] === -1) { _cursorPos[0] = Math.floor(_gameTotal / 2) - 1; }
+	
+	  if(_cursorPos[0] === -1) {
+	    _cursorPos[0] = Math.floor(Constants.GAME_TOTAL() / 2) - 1;
+	  }
 	}
 
 
@@ -317,19 +334,27 @@
 
 	var _width;
 	var _height;
+	var _gameTotal;
 	
 	module.exports = {
 	  CANVAS_WIDTH: getWidth,
 	  CANVAS_HEIGHT: getHeight,
-	  
-	  initDimensions: function(c) {
-	    _width = c.width;
-	    _height = c.height;
+	  MM_SCROLL_COOLDOWN: 150,
+	  GAME_TOTAL: getGameTotal,
+	
+	  initDimensions: function(canvas) {
+	    _width = canvas.width;
+	    _height = canvas.height;
+	  },
+	
+	  initGameTotal: function(total) {
+	    _gameTotal = total;
 	  }
 	};
 	
-	function getWidth()  { return _width;  }
-	function getHeight() { return _height; }
+	function getWidth()     { return _width;     }
+	function getHeight()    { return _height;    }
+	function getGameTotal() { return _gameTotal; }
 
 
 /***/ }

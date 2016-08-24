@@ -9,6 +9,7 @@ var ZombiePlayer = require('./Zombie.js');
 function ZombieTestDemo(socks, io) {
   this.initializePlayers(socks);
   this.boundary = new Boundary(500, 500);
+  
   this._initSockets(io);
   this.setupClientUpdateCallback(io);
 }

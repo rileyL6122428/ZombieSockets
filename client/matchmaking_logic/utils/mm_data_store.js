@@ -22,6 +22,5 @@ module.exports = {
 };
 
 function receiveData(data) {
-  debugger
   _data = data;
 }

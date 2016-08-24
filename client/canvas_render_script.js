@@ -5,7 +5,10 @@ var GameScript = require('./game_logic/game_script.js');
 var MMScript   = require('./matchmaking_logic/matchmaking_script.js');
 var Constants = require('./general_utils/constants');
 
+// NOTE PROBALY WRAP THIS IN A GIANT INIT METHOD
 Constants.initDimensions(canvas);
+sock.on('share game total', Constants.initGameTotal);
+// NOTE END INIT WRAPPING
 
 sock.on('To Matchmaking', runMatchMaking);
 var matchmakingIntervalID;
