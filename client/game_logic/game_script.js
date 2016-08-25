@@ -1,5 +1,13 @@
+// var Purgatory = require('./purgatory/purgatory');
+
 var GameScript = {
 
+  init: function (sock) {
+    // setStateListeners
+  },
+
+  run: function () {
+  }
 };
 
 module.exports = GameScript;

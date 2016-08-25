@@ -44,53 +44,44 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var canvas = document.getElementById("canvas");
-	var ctx = canvas.getContext("2d");
-	var sock = io();
-	var GameScript = __webpack_require__(1);
-	var MMScript   = __webpack_require__(2);
-	var Constants = __webpack_require__(6);
+	var canvas = document.getElementById("canvas"),
+	    ctx    = canvas.getContext("2d"),
+	    sock   = io();
 	
-	// NOTE PROBALY WRAP THIS IN A GIANT INIT METHOD
+	var GameScript  = __webpack_require__(1),
+	    MMScript    = __webpack_require__(2),
+	    PurgScript  = __webpack_require__(7),
+	    Constants   = __webpack_require__(6);
+	
+	var ModuleRunner = __webpack_require__(9),
+	    ClientModule = __webpack_require__(10);
+	
+	    // NOTE PROBALY WRAP THIS IN A GIANT INIT METHOD
 	Constants.initDimensions(canvas);
 	sock.on('share game total', Constants.initGameTotal);
 	// NOTE END INIT WRAPPING
 	
-	sock.on('To Matchmaking', runMatchMaking);
-	var matchmakingIntervalID;
-	function runMatchMaking() {
-	  // if(gameIntervalID) {
-	    // clearInterval(gameIntervalID);
-	  // }
-	  MMScript.init(sock);
-	  matchmakingIntervalID = MMScript.run(ctx);
-	}
-	
-	
-	// NOTE DO NOT DELETE THE FOLLOWING!!!
-	// sock.on('To Game', runGame);
-	// var gameIntervalID;
-	// function runGame() {
-	//   clearInterval(matchmakingIntervalID);
-	//   GameScript.init();
-	//   gameIntervalID = GameScript.run();
-	// }
-	
-	sock.on('game entered', () => { console.log("entered game"); });
-	
-	
-	window.addEventListener("beforeunload", (e) => {
-	  // TODO CLEAR INTERVALS
-	  clearInterval(matchmakingIntervalID);
-	});
+	ModuleRunner.addModules([
+	  new ClientModule(MMScript, 'To Matchmaking', sock, ctx),
+	  new ClientModule(PurgScript, 'To Purgatory', sock, ctx),
+	  new ClientModule(GameScript, 'To Game', sock, ctx),
+	]);
 
 
 /***/ },
 /* 1 */
 /***/ function(module, exports) {
 
+	// var Purgatory = require('./purgatory/purgatory');
+	
 	var GameScript = {
 	
+	  init: function (sock) {
+	    // setStateListeners
+	  },
+	
+	  run: function () {
+	  }
 	};
 	
 	module.exports = GameScript;
@@ -128,9 +119,9 @@
 	var sock;
 	
 	var MatchmakingScript = {
-	  init: function (s) {
-	    Store.initialzeDataReceivers(s);
-	    InputHandler.init(s);
+	  init: function (sock) {
+	    Store.initialzeDataReceivers(sock);
+	    InputHandler.init(sock);
 	  },
 	
 	  run: function (ctx) {
@@ -355,6 +346,120 @@
 	function getWidth()     { return _width;     }
 	function getHeight()    { return _height;    }
 	function getGameTotal() { return _gameTotal; }
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Renderer = __webpack_require__(8);
+	
+	module.exports = {
+	  init: function (sock) {
+	
+	  },
+	
+	  run: function(ctx) {
+	    var intervalId = setInterval(function () {
+	      Renderer.render(ctx);
+	    }, 1000 / 30);
+	
+	    return intervalId;
+	  }
+	};
+
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Constants = __webpack_require__(6);
+	
+	var PurgatoryRenderer = {
+	  render: function (ctx) {
+	    ctx.clearRect(0, 0, Constants.CANVAS_WIDTH(), Constants.CANVAS_HEIGHT());
+	    ctx.fillText("This is the Purgatory Component", 70, 50);
+	  }
+	}
+	
+	module.exports = PurgatoryRenderer;
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var IDRegulator = __webpack_require__(11);
+	
+	var _modules = [];
+	
+	module.exports = {
+	  addModules: function (modules) {
+	    for (var i = 0; i < modules.length; i++) {
+	      _modules.push(modules[i]);
+	      _modules[i].init();
+	    }
+	  },
+	};
+
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var IDRegulator = __webpack_require__(11);
+	
+	function ClientModule(script, sockSignalString, sock, ctx) {
+	  this.script = script;
+	  this.signalString = sockSignalString;
+	  this.sock = sock;
+	  this.ctx = ctx;
+	}
+	
+	ClientModule.prototype.init = function () {
+	  var signal    = this.signalString,
+	      runScript = this.runScript.bind(this);
+	
+	  this.sock.on(signal, runScript);
+	}
+	
+	ClientModule.prototype.runScript = function (script) {
+	  IDRegulator.clearAllIntervals();
+	
+	  this.script.init(this.sock);
+	  //NOTE Should I clear sock listeners when leaving a module???
+	  var intervalId = this.script.run(this.ctx);
+	
+	  IDRegulator.store(intervalId);
+	};
+	
+	module.exports = ClientModule;
+
+
+/***/ },
+/* 11 */
+/***/ function(module, exports) {
+
+	var _ids = [];
+	
+	var Regulator = {
+	  clearAllIntervals: function () {
+	    while(_ids.length > 0) {
+	      clearInterval(_ids.pop());
+	    }
+	  },
+	
+	  store: function (id) {
+	    _ids.push(id);
+	  }
+	};
+	
+	window.addEventListener("beforeunload", (e) => {
+	  // TODO CLEAR INTERVALS
+	  Regulator.clearAllIntervals();
+	});
+	
+	module.exports = Regulator;
 
 
 /***/ }

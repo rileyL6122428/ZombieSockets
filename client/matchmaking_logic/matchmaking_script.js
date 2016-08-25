@@ -4,9 +4,9 @@ var InputHandler = require('./utils/mm_input_handler.js');
 var sock;
 
 var MatchmakingScript = {
-  init: function (s) {
-    Store.initialzeDataReceivers(s);
-    InputHandler.init(s);
+  init: function (sock) {
+    Store.initialzeDataReceivers(sock);
+    InputHandler.init(sock);
   },
 
   run: function (ctx) {

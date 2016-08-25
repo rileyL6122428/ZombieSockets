@@ -1,39 +1,22 @@
-var canvas = document.getElementById("canvas");
-var ctx = canvas.getContext("2d");
-var sock = io();
-var GameScript = require('./game_logic/game_script.js');
-var MMScript   = require('./matchmaking_logic/matchmaking_script.js');
-var Constants = require('./general_utils/constants');
+var canvas = document.getElementById("canvas"),
+    ctx    = canvas.getContext("2d"),
+    sock   = io();
 
-// NOTE PROBALY WRAP THIS IN A GIANT INIT METHOD
+var GameScript  = require('./game_logic/game_script.js'),
+    MMScript    = require('./matchmaking_logic/matchmaking_script.js'),
+    PurgScript  = require('./purgatory/purgatory_script.js'),
+    Constants   = require('./general_utils/constants');
+
+var ModuleRunner = require('./general_utils/module_runner'),
+    ClientModule = require('./general_utils/client_module');
+
+    // NOTE PROBALY WRAP THIS IN A GIANT INIT METHOD
 Constants.initDimensions(canvas);
 sock.on('share game total', Constants.initGameTotal);
 // NOTE END INIT WRAPPING
 
-sock.on('To Matchmaking', runMatchMaking);
-var matchmakingIntervalID;
-function runMatchMaking() {
-  // if(gameIntervalID) {
-    // clearInterval(gameIntervalID);
-  // }
-  MMScript.init(sock);
-  matchmakingIntervalID = MMScript.run(ctx);
-}
-
-
-// NOTE DO NOT DELETE THE FOLLOWING!!!
-// sock.on('To Game', runGame);
-// var gameIntervalID;
-// function runGame() {
-//   clearInterval(matchmakingIntervalID);
-//   GameScript.init();
-//   gameIntervalID = GameScript.run();
-// }
-
-sock.on('game entered', () => { console.log("entered game"); });
-
-
-window.addEventListener("beforeunload", (e) => {
-  // TODO CLEAR INTERVALS
-  clearInterval(matchmakingIntervalID);
-});
+ModuleRunner.addModules([
+  new ClientModule(MMScript, 'To Matchmaking', sock, ctx),
+  new ClientModule(PurgScript, 'To Purgatory', sock, ctx),
+  new ClientModule(GameScript, 'To Game', sock, ctx),
+]);

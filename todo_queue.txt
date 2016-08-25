@@ -5,7 +5,7 @@ URGENT: Remove INTERVAL CB on document unload!
         REMOVE UNECESSARY SOCK LISTENERS
 
 RIGHT NOW
-  2) refactor code touched so far (continue from mm_input_handler)
+  2) refactor canvas render script into module runner
   3) setup game purgatory
   4) setup game launch
 
