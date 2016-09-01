@@ -28,25 +28,4 @@ io.on('connection', onConnection);
 function onConnection(sock) {
   io.emit('handShake', 'Hand Shake Established');
   matchMaker.direct(sock, io);
-  // sock.emit()
 }
-
-// function onConnection(sock) {
-//   io.emit('handShake', 'Hand Shake Established');
-//   setUpGame(sock);
-// }
-//
-// var playerSocks = [];
-//
-// function setUpGame(sock) {
-//   playerSocks.push(sock);
-//
-//   if(playerSocks.length === 2) {
-//     new ZombieGame(playerSocks, io);
-//     io.emit('msg', 'you are matched!');
-//     playerSocks = [];
-//
-//   } else {
-//     sock.emit('msg', 'you are waiting for more players');
-//   }
-// }

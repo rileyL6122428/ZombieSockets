@@ -1,9 +1,8 @@
 var Renderer = require('./utils/purg_renderer.js');
+var Store = require('./utils/purg_data_store.js');
 
 module.exports = {
-  init: function (sock) {
-
-  },
+  init: function (sock) { Store.initialize(sock); },
 
   run: function(ctx) {
     var intervalId = setInterval(function () {

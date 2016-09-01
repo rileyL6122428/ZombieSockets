@@ -2,23 +2,32 @@ var playersArr;
 var gamesArr;
 var waitingSocks;
 
-module.exports = {
+var ClientUpdater = {
   initialize: function (games, players, waitingPlayers) {
     playersArr = players;
     gamesArr = games;
     waitingSocks = waitingPlayers
   },
 
+  updateAll: function (gameIdx) {
+    ClientUpdater.updateWaitingPlayers();
+    ClientUpdater.updatePurgatoryPlayers(gameIdx);
+  },
 
-  update: function () {
-    var theData = data();
+  updateWaitingPlayers: function () {
     waitingSocks.forEach((sock) => {
-      sock.emit('mm update', theData);
+      sock.emit('mm update', waitingData());
+    });
+  },
+
+  updatePurgatoryPlayers: function (gameIdx) {
+    playersArr[gameIdx].forEach(function(player) {
+      player.emit('purg update', purgatoryData(gameIdx))
     });
   }
 }
 
-function data() {
+function waitingData() {
   return {
     playerTotals: generatePlayerTotals(),
     waitingPlayerTotal: waitingSocks.length
@@ -30,3 +39,10 @@ function generatePlayerTotals() {
   playersArr.forEach((playersHolder) => { totals.push(playersHolder.length) });
   return totals;
 }
+
+function purgatoryData (gameIdx) {
+  var players = playersArr[gameIdx];
+  return({ playerTotal: players.length });
+}
+
+module.exports = ClientUpdater;

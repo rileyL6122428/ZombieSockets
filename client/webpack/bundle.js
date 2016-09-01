@@ -54,7 +54,7 @@
 	    Constants   = __webpack_require__(6);
 	
 	var ModuleRunner = __webpack_require__(9),
-	    ClientModule = __webpack_require__(10);
+	    ClientModule = __webpack_require__(11);
 	
 	    // NOTE PROBALY WRAP THIS IN A GIANT INIT METHOD
 	Constants.initDimensions(canvas);
@@ -64,7 +64,7 @@
 	ModuleRunner.addModules([
 	  new ClientModule(MMScript, 'To Matchmaking', sock, ctx),
 	  new ClientModule(PurgScript, 'To Purgatory', sock, ctx),
-	  new ClientModule(GameScript, 'To Game', sock, ctx),
+	  new ClientModule(GameScript, 'To Game', sock, ctx)
 	]);
 
 
@@ -353,11 +353,10 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Renderer = __webpack_require__(8);
+	var Store = __webpack_require__(12);
 	
 	module.exports = {
-	  init: function (sock) {
-	
-	  },
+	  init: function (sock) { Store.initialize(sock); },
 	
 	  run: function(ctx) {
 	    var intervalId = setInterval(function () {
@@ -374,11 +373,17 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Constants = __webpack_require__(6);
+	var Store = __webpack_require__(12);
+	var Constants2 = __webpack_require__(13);
 	
 	var PurgatoryRenderer = {
 	  render: function (ctx) {
+	    var playerTotal = Store.getPlayerTotal();
+	
 	    ctx.clearRect(0, 0, Constants.CANVAS_WIDTH(), Constants.CANVAS_HEIGHT());
 	    ctx.fillText("This is the Purgatory Component", 70, 50);
+	    ctx.fillText("Player Count: " + playerTotal, 70, 100);
+	    ctx.fillText("Players needed: " + (Constants2.PLAYER_TOTAL - playerTotal), 70, 150);
 	  }
 	}
 	
@@ -389,7 +394,7 @@
 /* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var IDRegulator = __webpack_require__(11);
+	var IDRegulator = __webpack_require__(10);
 	
 	var _modules = [];
 	
@@ -399,15 +404,41 @@
 	      _modules.push(modules[i]);
 	      _modules[i].init();
 	    }
-	  },
+	  }
 	};
 
 
 /***/ },
 /* 10 */
+/***/ function(module, exports) {
+
+	var _ids = [];
+	
+	var Regulator = {
+	  clearAllIntervals: function () {
+	    while(_ids.length > 0) {
+	      clearInterval(_ids.pop());
+	    }
+	  },
+	
+	  store: function (id) {
+	    _ids.push(id);
+	  }
+	};
+	
+	window.addEventListener("beforeunload", (e) => {
+	  // TODO CLEAR INTERVALS
+	  Regulator.clearAllIntervals();
+	});
+	
+	module.exports = Regulator;
+
+
+/***/ },
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var IDRegulator = __webpack_require__(11);
+	var IDRegulator = __webpack_require__(10);
 	
 	function ClientModule(script, sockSignalString, sock, ctx) {
 	  this.script = script;
@@ -437,29 +468,30 @@
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports) {
 
-	var _ids = [];
+	var _playerTotal = 0;
 	
-	var Regulator = {
-	  clearAllIntervals: function () {
-	    while(_ids.length > 0) {
-	      clearInterval(_ids.pop());
-	    }
-	  },
+	module.exports = {
+	  initialize: (sock) => { sock.on('purg update', setPlayerTotal); },
 	
-	  store: function (id) {
-	    _ids.push(id);
-	  }
+	  getPlayerTotal: () => { return _playerTotal; }
 	};
 	
-	window.addEventListener("beforeunload", (e) => {
-	  // TODO CLEAR INTERVALS
-	  Regulator.clearAllIntervals();
-	});
-	
-	module.exports = Regulator;
+	function setPlayerTotal(data) {
+	  _playerTotal = data.playerTotal;
+	}
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	  PLAYER_TOTAL: 4,
+	  GAME_TOTAL: 4
+	};
 
 
 /***/ }

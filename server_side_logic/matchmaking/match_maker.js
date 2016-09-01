@@ -11,7 +11,6 @@ MatchMaker.prototype.initializeHolders = function () {
   this.unallocatedSocks = [];
   this.players = [];
   this.games = [];
-
   for (var i = 0; i < GameConstants.GAME_TOTAL; i++) {
     this.players.push([]);
     this.games  .push([]);
@@ -20,15 +19,11 @@ MatchMaker.prototype.initializeHolders = function () {
 
 MatchMaker.prototype.direct = function (sock) {
   this.unallocatedSocks.push(sock);
-
-// NOTE CONSIDER BUNDLING THE BODY BELOW
   sock.emit('To Matchmaking')
   sock.emit("share game total", GameConstants.GAME_TOTAL);
   sock.on('disconnect', ejectSockFromWaiting.bind(this, sock));
   sock.on('select game', joinGame.bind(this, sock));
-// NOTE END BUNDLE
-
-  ClientUpdater.update();
+  ClientUpdater.updateWaitingPlayers();
 };
 
 function ejectSockFromWaiting(sock) {
@@ -38,8 +33,7 @@ function ejectSockFromWaiting(sock) {
       break;
     }
   }
-
-  ClientUpdater.update();
+  ClientUpdater.updateWaitingPlayers();
 }
 
 function joinGame(sock, data) {
@@ -47,13 +41,11 @@ function joinGame(sock, data) {
 
   if(this.players[gameIdx].length === GameConstants.PLAYER_TOTAL) {
     sock.emit('game full notification');
-
   } else {
     ejectSockFromWaiting.call(this, sock);
     this.players[gameIdx].push(sock);
-    sock.emit('game entered');
-
-    ClientUpdater.update();
+    sock.emit('To Purgatory');
+    ClientUpdater.updateAll(gameIdx);
   }
 }
 

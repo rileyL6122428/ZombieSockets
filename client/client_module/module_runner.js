@@ -8,5 +8,5 @@ module.exports = {
       _modules.push(modules[i]);
       _modules[i].init();
     }
-  },
+  }
 };
