@@ -44,27 +44,44 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var canvas = document.getElementById("canvas"),
-	    ctx    = canvas.getContext("2d"),
+	var Constants = __webpack_require__(1);
+	
+	var canvas = document.getElementById("canvas");
+	    canvas.width  = Constants.CANVAS_WIDTH;
+	    canvas.height = Constants.CANVAS_HEIGHT;
+	
+	var ctx    = canvas.getContext("2d"),
 	    sock   = io();
 	
-	var GameScript  = __webpack_require__(1),
-	    MMScript    = __webpack_require__(2),
-	    PurgScript  = __webpack_require__(7),
-	    Constants   = __webpack_require__(6);
+	var GameScript  = __webpack_require__(2),
+	    MMScript    = __webpack_require__(3),
+	    PurgScript  = __webpack_require__(7);
 	
 	var ModuleRunner = __webpack_require__(10),
 	    ClientModule = __webpack_require__(12);
 	
 	ModuleRunner.addModules([
-	  new ClientModule(MMScript, 'To Matchmaking', sock, ctx),
-	  new ClientModule(PurgScript, 'To Purgatory', sock, ctx),
-	  new ClientModule(GameScript, 'To Game', sock, ctx)
+	  new ClientModule(MMScript  , 'To Matchmaking', sock, ctx),
+	  new ClientModule(PurgScript, 'To Purgatory'  , sock, ctx),
+	  new ClientModule(GameScript, 'To Game'       , sock, ctx)
 	]);
 
 
 /***/ },
 /* 1 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	  PLAYER_TOTAL: 4,
+	  GAME_TOTAL: 4,
+	  MM_SCROLL_COOLDOWN: 150,
+	  CANVAS_WIDTH: 800,
+	  CANVAS_HEIGHT: 550
+	};
+
+
+/***/ },
+/* 2 */
 /***/ function(module, exports) {
 
 	// var Purgatory = require('./purgatory/purgatory');
@@ -105,12 +122,12 @@
 
 
 /***/ },
-/* 2 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Renderer = __webpack_require__(3);
-	var Store = __webpack_require__(4);
-	var InputHandler = __webpack_require__(5);
+	var Renderer = __webpack_require__(4);
+	var Store = __webpack_require__(5);
+	var InputHandler = __webpack_require__(6);
 	var sock;
 	
 	var MatchmakingScript = {
@@ -133,12 +150,12 @@
 
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Store = __webpack_require__(4);
-	var InputHandler = __webpack_require__(5);
-	var Constants = __webpack_require__(6);
+	var Store = __webpack_require__(5);
+	var InputHandler = __webpack_require__(6);
+	var Constants = __webpack_require__(1);
 	
 	var MatchmakingRenderer = {
 	  render: function (ctx) {
@@ -192,7 +209,7 @@
 
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports) {
 
 	// DATA WE NEED TO STORE
@@ -224,10 +241,10 @@
 
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Constants = __webpack_require__(6);
+	var Constants = __webpack_require__(1);
 	
 	var _cursorPos = [0, 0];
 	var _readyToMoveCursor = true;
@@ -315,19 +332,6 @@
 
 
 /***/ },
-/* 6 */
-/***/ function(module, exports) {
-
-	module.exports = {
-	  PLAYER_TOTAL: 4,
-	  GAME_TOTAL: 4,
-	  MM_SCROLL_COOLDOWN: 150,
-	  CANVAS_WIDTH: 800,
-	  CANVAS_HEIGHT: 550
-	};
-
-
-/***/ },
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -351,7 +355,7 @@
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Constants = __webpack_require__(6);
+	var Constants = __webpack_require__(1);
 	var Store = __webpack_require__(9);
 	
 	var PurgatoryRenderer = {
