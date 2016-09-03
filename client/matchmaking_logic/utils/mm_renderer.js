@@ -1,10 +1,10 @@
 var Store = require('./mm_data_store.js');
 var InputHandler = require('./mm_input_handler.js');
-var Constants = require('../../general_utils/constants');
+var Constants = require('../../../constants');
 
 var MatchmakingRenderer = {
   render: function (ctx) {
-    ctx.clearRect(0, 0, Constants.CANVAS_WIDTH(), Constants.CANVAS_HEIGHT());
+    ctx.clearRect(0, 0, Constants.CANVAS_WIDTH, Constants.CANVAS_HEIGHT);
     ctx.fillStyle = "black"
 
     drawPlayerWaitingDisplay(ctx);

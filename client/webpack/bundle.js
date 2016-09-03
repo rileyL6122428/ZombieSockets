@@ -53,13 +53,8 @@
 	    PurgScript  = __webpack_require__(7),
 	    Constants   = __webpack_require__(6);
 	
-	var ModuleRunner = __webpack_require__(9),
-	    ClientModule = __webpack_require__(11);
-	
-	    // NOTE PROBALY WRAP THIS IN A GIANT INIT METHOD
-	Constants.initDimensions(canvas);
-	sock.on('share game total', Constants.initGameTotal);
-	// NOTE END INIT WRAPPING
+	var ModuleRunner = __webpack_require__(10),
+	    ClientModule = __webpack_require__(12);
 	
 	ModuleRunner.addModules([
 	  new ClientModule(MMScript, 'To Matchmaking', sock, ctx),
@@ -147,7 +142,7 @@
 	
 	var MatchmakingRenderer = {
 	  render: function (ctx) {
-	    ctx.clearRect(0, 0, Constants.CANVAS_WIDTH(), Constants.CANVAS_HEIGHT());
+	    ctx.clearRect(0, 0, Constants.CANVAS_WIDTH, Constants.CANVAS_HEIGHT);
 	    ctx.fillStyle = "black"
 	
 	    drawPlayerWaitingDisplay(ctx);
@@ -265,7 +260,7 @@
 	
 	  selectedGameIdx: function () {
 	    return (
-	      _cursorPos[0] * Math.floor(Constants.GAME_TOTAL() / 2) + _cursorPos[1]
+	      _cursorPos[0] * Math.floor(Constants.GAME_TOTAL / 2) + _cursorPos[1]
 	    );
 	  }
 	}
@@ -295,7 +290,7 @@
 	}
 	
 	function scrollRight() {
-	  _cursorPos[1] = (_cursorPos[1] - 1) % Math.floor(Constants.GAME_TOTAL() / 2);
+	  _cursorPos[1] = (_cursorPos[1] - 1) % Math.floor(Constants.GAME_TOTAL / 2);
 	
 	  if(_cursorPos[1] === -1) {
 	    _cursorPos[1] = 1;
@@ -303,7 +298,7 @@
 	}
 	
 	function scrollLeft() {
-	  _cursorPos[1] = (_cursorPos[1] + 1) % Math.floor(Constants.GAME_TOTAL() / 2);
+	  _cursorPos[1] = (_cursorPos[1] + 1) % Math.floor(Constants.GAME_TOTAL / 2);
 	}
 	
 	function scrollUp() {
@@ -314,7 +309,7 @@
 	  _cursorPos[0] = (_cursorPos[0] - 1) % 2;
 	
 	  if(_cursorPos[0] === -1) {
-	    _cursorPos[0] = Math.floor(Constants.GAME_TOTAL() / 2) - 1;
+	    _cursorPos[0] = Math.floor(Constants.GAME_TOTAL / 2) - 1;
 	  }
 	}
 
@@ -323,29 +318,13 @@
 /* 6 */
 /***/ function(module, exports) {
 
-	var _width;
-	var _height;
-	var _gameTotal;
-	
 	module.exports = {
-	  CANVAS_WIDTH: getWidth,
-	  CANVAS_HEIGHT: getHeight,
+	  PLAYER_TOTAL: 4,
+	  GAME_TOTAL: 4,
 	  MM_SCROLL_COOLDOWN: 150,
-	  GAME_TOTAL: getGameTotal,
-	
-	  initDimensions: function(canvas) {
-	    _width = canvas.width;
-	    _height = canvas.height;
-	  },
-	
-	  initGameTotal: function(total) {
-	    _gameTotal = total;
-	  }
+	  CANVAS_WIDTH: 800,
+	  CANVAS_HEIGHT: 550
 	};
-	
-	function getWidth()     { return _width;     }
-	function getHeight()    { return _height;    }
-	function getGameTotal() { return _gameTotal; }
 
 
 /***/ },
@@ -353,7 +332,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Renderer = __webpack_require__(8);
-	var Store = __webpack_require__(12);
+	var Store = __webpack_require__(9);
 	
 	module.exports = {
 	  init: function (sock) { Store.initialize(sock); },
@@ -373,17 +352,16 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Constants = __webpack_require__(6);
-	var Store = __webpack_require__(12);
-	var Constants2 = __webpack_require__(13);
+	var Store = __webpack_require__(9);
 	
 	var PurgatoryRenderer = {
 	  render: function (ctx) {
 	    var playerTotal = Store.getPlayerTotal();
 	
-	    ctx.clearRect(0, 0, Constants.CANVAS_WIDTH(), Constants.CANVAS_HEIGHT());
+	    ctx.clearRect(0, 0, Constants.CANVAS_WIDTH, Constants.CANVAS_HEIGHT);
 	    ctx.fillText("This is the Purgatory Component", 70, 50);
 	    ctx.fillText("Player Count: " + playerTotal, 70, 100);
-	    ctx.fillText("Players needed: " + (Constants2.PLAYER_TOTAL - playerTotal), 70, 150);
+	    ctx.fillText("Players needed: " + (Constants.PLAYER_TOTAL - playerTotal), 70, 150);
 	  }
 	}
 	
@@ -392,9 +370,26 @@
 
 /***/ },
 /* 9 */
+/***/ function(module, exports) {
+
+	var _playerTotal = 0;
+	
+	module.exports = {
+	  initialize: (sock) => { sock.on('purg update', setPlayerTotal); },
+	
+	  getPlayerTotal: () => { return _playerTotal; }
+	};
+	
+	function setPlayerTotal(data) {
+	  _playerTotal = data.playerTotal;
+	}
+
+
+/***/ },
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var IDRegulator = __webpack_require__(10);
+	var IDRegulator = __webpack_require__(11);
 	
 	var _modules = [];
 	
@@ -409,7 +404,7 @@
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
 	var _ids = [];
@@ -435,10 +430,10 @@
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var IDRegulator = __webpack_require__(10);
+	var IDRegulator = __webpack_require__(11);
 	
 	function ClientModule(script, sockSignalString, sock, ctx) {
 	  this.script = script;
@@ -465,33 +460,6 @@
 	};
 	
 	module.exports = ClientModule;
-
-
-/***/ },
-/* 12 */
-/***/ function(module, exports) {
-
-	var _playerTotal = 0;
-	
-	module.exports = {
-	  initialize: (sock) => { sock.on('purg update', setPlayerTotal); },
-	
-	  getPlayerTotal: () => { return _playerTotal; }
-	};
-	
-	function setPlayerTotal(data) {
-	  _playerTotal = data.playerTotal;
-	}
-
-
-/***/ },
-/* 13 */
-/***/ function(module, exports) {
-
-	module.exports = {
-	  PLAYER_TOTAL: 4,
-	  GAME_TOTAL: 4
-	};
 
 
 /***/ }

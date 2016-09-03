@@ -1,0 +1,7 @@
+module.exports = {
+  PLAYER_TOTAL: 4,
+  GAME_TOTAL: 4,
+  MM_SCROLL_COOLDOWN: 150,
+  CANVAS_WIDTH: 800,
+  CANVAS_HEIGHT: 550
+};

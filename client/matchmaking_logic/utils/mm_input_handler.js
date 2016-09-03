@@ -1,4 +1,4 @@
-var Constants = require('../../general_utils/constants.js');
+var Constants = require('../../../constants.js');
 
 var _cursorPos = [0, 0];
 var _readyToMoveCursor = true;
@@ -31,7 +31,7 @@ module.exports = {
 
   selectedGameIdx: function () {
     return (
-      _cursorPos[0] * Math.floor(Constants.GAME_TOTAL() / 2) + _cursorPos[1]
+      _cursorPos[0] * Math.floor(Constants.GAME_TOTAL / 2) + _cursorPos[1]
     );
   }
 }
@@ -61,7 +61,7 @@ function scrollOnInput() {
 }
 
 function scrollRight() {
-  _cursorPos[1] = (_cursorPos[1] - 1) % Math.floor(Constants.GAME_TOTAL() / 2);
+  _cursorPos[1] = (_cursorPos[1] - 1) % Math.floor(Constants.GAME_TOTAL / 2);
 
   if(_cursorPos[1] === -1) {
     _cursorPos[1] = 1;
@@ -69,7 +69,7 @@ function scrollRight() {
 }
 
 function scrollLeft() {
-  _cursorPos[1] = (_cursorPos[1] + 1) % Math.floor(Constants.GAME_TOTAL() / 2);
+  _cursorPos[1] = (_cursorPos[1] + 1) % Math.floor(Constants.GAME_TOTAL / 2);
 }
 
 function scrollUp() {
@@ -80,6 +80,6 @@ function scrollDown() {
   _cursorPos[0] = (_cursorPos[0] - 1) % 2;
 
   if(_cursorPos[0] === -1) {
-    _cursorPos[0] = Math.floor(Constants.GAME_TOTAL() / 2) - 1;
+    _cursorPos[0] = Math.floor(Constants.GAME_TOTAL / 2) - 1;
   }
 }
