@@ -1,35 +1,29 @@
-// var Purgatory = require('./purgatory/purgatory');
+var InputHandler = require('./utils/input_handler'),
+    SocketInitializer = require('./utils/socket_initializer'),
+    Renderer = require('./utils/renderer');
+
+var playerPositions = [[0, 0], [0, 0], [0, 0], [0, 0]];
+var _sock;
 
 var GameScript = {
-
   init: function (sock) {
-    // setStateListeners
+    _sock = sock;
+    SocketInitializer.initializeSockets(sock, playerPositions);
+    Renderer.setSocketListeners(sock);
+    InputHandler.registerGameOverCB(sock);
   },
 
-  run: function () {
+  run: function (ctx) {
+    var halfWidth = (850 - 30) / 2;
+    var halfHeight = (500 - 30) / 2;
+
+    return setInterval(function() {
+      if(Renderer.readyToRender()) {
+        Renderer.renderCanvasEl(ctx, playerPositions, halfWidth, halfHeight, _sock);
+        InputHandler.handleInput(_sock);
+      }
+    }, 1000/30);
   }
 };
 
 module.exports = GameScript;
-
-// var ctx = canvas.getContext('2d');
-// var halfWidth = (canvas.clientWidth - 30) / 2;
-// var halfHeight = (canvas.clientHeight - 30) / 2;
-
-// var socketInitializer = require('./utils/socket_initializer.js');
-// var inputHandler = require('./utils/player_input_handler.js');
-// var GameRenderer = require('./rendering/game_renderer.js');
-// var MatchmakingRenderer = require('./rendering/matchmaking_renderer.js');
-
-// var playerPositions = [[0, 0], [0, 0]];
-
-// socketInitializer.initializeSockets(sock, playerPositions);
-// GameRenderer.setSocketListeners(sock);
-// inputHandler.registerGameOverCB(sock);
-
-// var renderID = setInterval(function() {
-  // if(GameRenderer.readyToRender()) {
-    // GameRenderer.renderCanvasEl(ctx, playerPositions, halfWidth, halfHeight, sock);
-    // inputHandler.handleInput(sock);
-  // }
-// }, 1000/30);

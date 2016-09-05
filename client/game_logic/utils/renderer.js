@@ -1,7 +1,6 @@
-var inputHandler = require("../utils/player_input_handler.js");
-var playerIdx;
-var zombieIdxs = {};
-var gameOver = false;
+var playerIdx,
+    zombieIdxs = {},
+    gameOver = false;
 
 var GameRenderer = {
   renderCanvasEl: function (ctx, positions, halfWidth, halfHeight) {
@@ -9,10 +8,10 @@ var GameRenderer = {
     _render(ctx, positions, halfWidth, halfHeight);
   },
 
-  setSocketListeners: function (s) {
-    _setZombieStatusListener(s);
-    _setPlayerIndexListener(s);
-    _setGameoverListener(s);
+  setSocketListeners: function (sock) {
+    _setZombieStatusListener(sock);
+    _setPlayerIndexListener(sock);
+    _setGameoverListener(sock);
   },
 
   readyToRender: function () { return playerIdx !== undefined; }
@@ -27,7 +26,9 @@ function _setZombieStatusListener(s) {
 }
 
 function _setPlayerIndexListener(s) {
-  s.on('register player number', (idx) => { playerIdx = idx; });
+  s.on('register player number', (idx) => {
+    playerIdx = idx;
+  });
 }
 
 function _render(ctx, positions, halfWidth, halfHeight) {

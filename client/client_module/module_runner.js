@@ -1,5 +1,3 @@
-var IDRegulator = require('./interval_id_regulator.js');
-
 var _modules = [];
 
 module.exports = {

@@ -7,9 +7,9 @@ var HumanPlayer = require('./Human.js');
 var ZombiePlayer = require('./Zombie.js');
 
 function ZombieTestDemo(socks, io) {
+
   this.initializePlayers(socks);
   this.boundary = new Boundary(500, 500);
-  
   this._initSockets(io);
   this.setupClientUpdateCallback(io);
 }
@@ -27,12 +27,16 @@ ZombieTestDemo.prototype.initializePlayers = function (socks) {
 };
 
 ZombieTestDemo.prototype._initSockets = function (io) {
-  this._players.forEach(function(player, idx) {
-    player._initSocket();
-    player.sock.emit('register player number', idx);
-    if(player instanceof ZombiePlayer) { io.emit("Is a Zombie", idx); }
-  });
 
+  this._players.forEach(function(player, idx, players) {
+    player.sock.emit('register player number', idx);
+
+    player._initSocket();
+
+    if(player instanceof ZombiePlayer) {
+      players.forEach((player) => { player.sock.emit("Is a Zombie", idx); });
+    }
+  });
 };
 
 ZombieTestDemo.prototype.playerPositions = function () {
@@ -46,7 +50,7 @@ ZombieTestDemo.prototype.playerPositions = function () {
 };
 
 ZombieTestDemo.prototype.gameOver = function () {
-  return this._zombies.length === 2;
+  return this._zombies.length === this._players.length;
 };
 
 ZombieTestDemo.prototype.setupClientUpdateCallback = function (io) {

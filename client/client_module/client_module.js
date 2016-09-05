@@ -15,12 +15,11 @@ ClientModule.prototype.init = function () {
 }
 
 ClientModule.prototype.runScript = function (script) {
+  if(this.signalString === 'To Game') { debugger; }
   IDRegulator.clearAllIntervals();
-
   this.script.init(this.sock);
   //NOTE Should I clear sock listeners when leaving a module???
   var intervalId = this.script.run(this.ctx);
-
   IDRegulator.store(intervalId);
 };
 

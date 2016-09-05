@@ -2,7 +2,9 @@ var ZombieGame = require('../game/ZombieGame.js');
 var GameConstants = require('../../constants.js');
 var ClientUpdater = require('./client_updater.js');
 
-function MatchMaker() {
+function MatchMaker(io) {
+  this.io = io;
+
   this.initializeHolders();
   ClientUpdater.initialize(this.games, this.players, this.unallocatedSocks);
 }
@@ -13,7 +15,6 @@ MatchMaker.prototype.initializeHolders = function () {
   this.games = [];
   for (var i = 0; i < GameConstants.GAME_TOTAL; i++) {
     this.players.push([]);
-    this.games  .push([]);
   }
 };
 
@@ -27,7 +28,6 @@ MatchMaker.prototype.direct = function (sock) {
 
 function ejectSockFromWaiting(sock) {
   for (var i = 0; i < this.unallocatedSocks.length; i++) {
-    
     if(sock === this.unallocatedSocks[i]) {
       this.unallocatedSocks.splice(i, 1);
       break;
@@ -38,14 +38,21 @@ function ejectSockFromWaiting(sock) {
 }
 
 function joinGame(sock, data) {
-  var gameIdx = data.gameIdx;
+  var gameIdx = data.gameIdx,
+      players = this.players[gameIdx];
 
-  if(this.players[gameIdx].length === GameConstants.PLAYER_TOTAL) {
+  if(players.length === GameConstants.PLAYER_TOTAL) {
     sock.emit('game full notification');
+
+  } else if(players.length === GameConstants.PLAYER_TOTAL - 1) {
+    ejectSockFromWaiting.call(this, sock);
+    players.push(sock);
+    players.forEach((playerSock) => { playerSock.emit('To Game'); });
+    this.games[gameIdx] = new ZombieGame(players, this.io);
 
   } else {
     ejectSockFromWaiting.call(this, sock);
-    this.players[gameIdx].push(sock);
+    players.push(sock);
     sock.emit('To Purgatory');
     ClientUpdater.updateAll(gameIdx);
   }
