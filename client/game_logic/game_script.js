@@ -1,26 +1,19 @@
 var InputHandler = require('./utils/input_handler'),
-    SocketInitializer = require('./utils/socket_initializer'),
-    Renderer = require('./utils/renderer');
-
-var playerPositions = [[0, 0], [0, 0], [0, 0], [0, 0]];
-var _sock;
+    Store        = require('./utils/store'),
+    Renderer     = require('./utils/renderer'),
+    Constants    = require('../../constants');
 
 var GameScript = {
-  init: function (sock) {
-    _sock = sock;
-    SocketInitializer.initializeSockets(sock, playerPositions);
-    Renderer.setSocketListeners(sock);
-    InputHandler.registerGameOverCB(sock);
-  },
+  init: function (sock) { Store.init(sock); },
 
   run: function (ctx) {
-    var halfWidth = (850 - 30) / 2;
-    var halfHeight = (500 - 30) / 2;
+    var halfWidth  = (Constants.CANVAS_WIDTH  - 30) / 2,
+        halfHeight = (Constants.CANVAS_HEIGHT - 30) / 2;
 
-    return setInterval(function() {
-      if(Renderer.readyToRender()) {
-        Renderer.renderCanvasEl(ctx, playerPositions, halfWidth, halfHeight, _sock);
-        InputHandler.handleInput(_sock);
+    return setInterval (function() {
+      if(Store.readyToRender()) {
+        Renderer.renderCanvasEl(ctx, halfWidth, halfHeight);
+        InputHandler.handleInput();
       }
     }, 1000/30);
   }

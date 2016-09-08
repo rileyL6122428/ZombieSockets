@@ -5,32 +5,7 @@ URGENT: Remove INTERVAL CB on document unload!
         REMOVE UNECESSARY SOCK LISTENERS
 
 RIGHT NOW
-  3) setup game purgatory
-  4) setup game launch
+  2) setup game reset upon win (maybe go back to purgatory)
+  3) push to heroku
 
 1) GET DATA TO FRONT END
-
-Next Steps:
-
-Organize multiple games
-flesh out extra mechanics, including score able mechanics
-
-Plan for multiple games
-Need to create a matchmaking logic file and matchmaking renderer file
-
-For the server side matchmaking
-organize multiple games in an array on the server file
-organize waiting socks also as an array
-let a sock emit certain events from the client side that lets them choose
-a game that still has slots available
-Once the game fills, a game starts
-When a game ends, the game is discarded and the socks can choose to be
-re-entered into a new game, or to be sent back to matchmaking (by default,
-the sock will be discarded)
-
-for the client side matchmaking
-need to render a matchmaking screen
-the screen will need to have a ui for picking a game to jump into, along with
-info concerning that game's fill status
-Once a game is entered, the status of the game filling needs to be updated
-on all waiting player screens

@@ -1,3 +1,5 @@
+var Store = require('./store');
+
 var _inputSetup = [
   ['right', 'move right'],
   ['left', 'move left'],
@@ -5,16 +7,12 @@ var _inputSetup = [
   ['up', 'move up']
 ]
 
-var gameOver = false;
-
 module.exports = {
   handleInput: function(sock) {
     _inputSetup.forEach(function(inputs) {
-      if(key.isPressed(inputs[0]) && !gameOver) {　sock.emit(inputs[1]); }
+      if(key.isPressed(inputs[0]) && !Store.gameIsOver()) {　
+        Store.getSock().emit(inputs[1]);
+      }
     });
-  },
-
-  registerGameOverCB: function (sock) {
-    sock.on('game over', () => { gameOver = true; });
   }
 }
