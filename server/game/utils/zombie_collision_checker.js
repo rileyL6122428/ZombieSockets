@@ -1,7 +1,7 @@
 var Zombie = require('../Zombie.js');
 
 module.exports = {
-  detectZombieCatches: function (humans, zombies, players, io) {
+  detectZombieCatches: function (humans, zombies, players) {
     for (var zIdx = 0; zIdx < zombies.length; zIdx++) {
       for (var hIdx = 0; hIdx < humans.length; hIdx++) {
         if(this.isCaught(humans[hIdx], zombies[zIdx])) {
@@ -12,7 +12,9 @@ module.exports = {
 
           humans.splice(hIdx, 1);
           zombies.push(players[playerIdx]);
-          io.emit("Is a Zombie", playerIdx);
+          players.forEach(function (player) {
+            player.sock.emit("Is a Zombie", playerIdx);
+          });
 
           // NOTE consider changing the player data structure for constant time
           // removal at some point in the future

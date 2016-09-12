@@ -45,6 +45,15 @@ module.exports = {
     setSocketListeners();
   },
 
+  reset: function() {
+    _positions = [];
+    for (var i = 0; i < Constants.PLAYER_TOTAL; i++) { _positions.push([0,0]); }
+
+    _playerIdx = undefined,
+    _zombieIdxs = {},
+    _gameOver = false;
+  },
+
   getPlayerIdx : function () { return _playerIdx;          },
   getPositions : function () { return _positions;          },
   getZombieIdxs: function () { return _zombieIdxs;         },

@@ -4,7 +4,10 @@ var InputHandler = require('./utils/input_handler'),
     Constants    = require('../../constants');
 
 var GameScript = {
-  init: function (sock) { Store.init(sock); },
+  init: function (sock) {
+    Store.reset();
+    Store.init(sock);
+  },
 
   run: function (ctx) {
     var halfWidth  = (Constants.CANVAS_WIDTH  - 30) / 2,
